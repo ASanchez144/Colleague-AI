@@ -1,0 +1,144 @@
+{
+  "id": "05-data-analytics",
+  "name": "Agente de Análisis de Datos",
+  "description": "Agente inteligente para análisis de datos automatizado, seguimiento de KPIs, generación de informes y pronósticos predictivos. Integra múltiples fuentes de datos para proporcionar insights accionables y detección de anomalías en tiempo real.",
+  "version": "1.0.0",
+  "category": "analytics",
+  "integrations": [
+    "google-sheets",
+    "excel",
+    "supabase",
+    "hubspot"
+  ],
+  "requiredEnvVars": [
+    "GOOGLE_SHEETS_CLIENT_ID",
+    "GOOGLE_SHEETS_CLIENT_SECRET",
+    "SUPABASE_URL",
+    "SUPABASE_KEY"
+  ],
+  "defaultConfig": {
+    "language": "es",
+    "reportFrequency": "weekly",
+    "outputFormat": "pdf",
+    "forecastHorizon": 30,
+    "anomalyDetectionEnabled": true,
+    "anomalyThreshold": 2.0,
+    "kpis": [
+      {
+        "id": "kpi-sales",
+        "name": "Ventas Totales",
+        "description": "Ingresos totales generados",
+        "metric": "sum(revenue)",
+        "unit": "EUR",
+        "target": 10000,
+        "frequency": "daily"
+      },
+      {
+        "id": "kpi-leads",
+        "name": "Leads Generados",
+        "description": "Número de nuevos leads",
+        "metric": "count(leads)",
+        "unit": "leads",
+        "target": 50,
+        "frequency": "daily"
+      },
+      {
+        "id": "kpi-conversion",
+        "name": "Tasa de Conversión",
+        "description": "Porcentaje de leads convertidos en ventas",
+        "metric": "count(conversions) / count(leads) * 100",
+        "unit": "%",
+        "target": 20,
+        "frequency": "daily"
+      },
+      {
+        "id": "kpi-customer-acquisition",
+        "name": "Costo de Adquisición",
+        "description": "Costo promedio por cliente adquirido",
+        "metric": "sum(marketing_spend) / count(new_customers)",
+        "unit": "EUR",
+        "target": 50,
+        "frequency": "weekly"
+      },
+      {
+        "id": "kpi-customer-lifetime-value",
+        "name": "Valor de Vida del Cliente",
+        "description": "Valor promedio generado por cliente",
+        "metric": "avg(customer_lifetime_value)",
+        "unit": "EUR",
+        "target": 500,
+        "frequency": "monthly"
+      }
+    ],
+    "dataSources": [
+      {
+        "id": "source-sales",
+        "name": "Ventas",
+        "type": "google-sheets",
+        "spreadsheetId": "",
+        "range": "Sales!A:G"
+      },
+      {
+        "id": "source-leads",
+        "name": "Leads",
+        "type": "hubspot",
+        "endpoint": "/crm/v3/objects/contacts"
+      },
+      {
+        "id": "source-analytics",
+        "name": "Analytics",
+        "type": "supabase",
+        "table": "analytics_events"
+      }
+    ],
+    "reportTemplate": {
+      "title": "Informe de Análisis",
+      "sections": [
+        "executive_summary",
+        "kpi_dashboard",
+        "trend_analysis",
+        "anomalies",
+        "forecasts",
+        "recommendations"
+      ],
+      "includeCharts": true,
+      "includeTables": true
+    },
+    "alertThresholds": {
+      "criticalDown": 80,
+      "warningDown": 90,
+      "warningUp": 110,
+      "criticalUp": 120
+    },
+    "forecastModels": [
+      "linear-regression",
+      "exponential-smoothing",
+      "arima"
+    ]
+  },
+  "adaptableFields": [
+    "kpis",
+    "dataSources",
+    "reportTemplate",
+    "alertThresholds",
+    "forecastModels",
+    "reportFrequency",
+    "outputFormat",
+    "anomalyThreshold",
+    "forecastHorizon"
+  ],
+  "capabilities": [
+    "data-fetching",
+    "kpi-calculation",
+    "report-generation",
+    "anomaly-detection",
+    "forecasting",
+    "alert-management",
+    "data-visualization"
+  ],
+  "webhookEndpoints": {
+    "onReportGenerated": "/api/webhooks/report-generated",
+    "onAnomalyDetected": "/api/webhooks/anomaly-detected",
+    "onAlertTriggered": "/api/webhooks/alert-triggered"
+  }
+}

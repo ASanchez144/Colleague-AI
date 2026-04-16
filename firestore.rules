@@ -1,0 +1,115 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: leads
+    // Document ID: auto-generated
+    // Fields:
+    //   - company: string (required, max 100)
+    //   - sector: string (required, max 50)
+    //   - team_size: string (required, max 20)
+    //   - tools: list of strings (optional, max 20 items, each max 50 chars)
+    //   - other_tools: string (optional, max 200)
+    //   - lead_flow: string (optional, max 1000)
+    //   - repetitive_tasks: string (optional, max 1000)
+    //   - bottlenecks: string (optional, max 1000)
+    //   - magic_wand: string (optional, max 500)
+    //   - security: string (optional, max 50)
+    //   - name: string (required, max 100)
+    //   - email: string (required, valid email)
+    //   - phone: string (optional, max 50)
+    //   - website: string (optional, max 200)
+    //   - urgency: string (optional, max 50)
+    //   - createdAt: timestamp (required, immutable)
+    //   - status: string (required, enum: 'new', 'contacted', 'qualified', 'discarded')
+    //
+    // Collection: users
+    // Document ID: user uid
+    // Fields:
+    //   - email: string (required, valid email)
+    //   - role: string (required, enum: 'admin')
+    //   - createdAt: timestamp (required, immutable)
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        (
+          (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+           get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin') ||
+          (request.auth.token.email == "arturoeldeteruel@gmail.com" && request.auth.token.email_verified == true)
+        );
+    }
+
+    function isValidEmail(email) {
+      return email is string && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    function isValidOptionalString(field, maxLen) {
+      return !('field' in request.resource.data) ||
+             (request.resource.data[field] is string && request.resource.data[field].size() <= maxLen);
+    }
+
+    function isValidLead(data) {
+      return data.keys().hasAll(['company', 'sector', 'team_size', 'name', 'email', 'createdAt', 'status']) &&
+             data.company is string && data.company.size() > 0 && data.company.size() <= 100 &&
+             data.sector is string && data.sector.size() > 0 && data.sector.size() <= 50 &&
+             data.team_size is string && data.team_size.size() > 0 && data.team_size.size() <= 20 &&
+             data.name is string && data.name.size() > 0 && data.name.size() <= 100 &&
+             isValidEmail(data.email) &&
+             data.createdAt is timestamp &&
+             data.status in ['new', 'contacted', 'qualified', 'discarded'] &&
+             (!('tools' in data) || (data.tools is list && data.tools.size() <= 20)) &&
+             isValidOptionalString('other_tools', 200) &&
+             isValidOptionalString('lead_flow', 1000) &&
+             isValidOptionalString('repetitive_tasks', 1000) &&
+             isValidOptionalString('bottlenecks', 1000) &&
+             isValidOptionalString('magic_wand', 500) &&
+             isValidOptionalString('security', 50) &&
+             isValidOptionalString('phone', 50) &&
+             isValidOptionalString('website', 200) &&
+             isValidOptionalString('urgency', 50);
+    }
+
+    function isValidUser(data) {
+      return data.keys().hasAll(['email', 'role', 'createdAt']) &&
+             isValidEmail(data.email) &&
+             data.role == 'admin' &&
+             data.createdAt is timestamp;
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /leads/{leadId} {
+      // Anyone can create a lead (public form submission)
+      allow create: if isValidLead(request.resource.data) &&
+                    request.resource.data.status == 'new';
+
+      // Only admins can read, update, or delete leads
+      allow read, delete: if isAdmin();
+      allow update: if isAdmin() &&
+                    isValidLead(request.resource.data) &&
+                    request.resource.data.createdAt == resource.data.createdAt;
+    }
+
+    match /users/{userId} {
+      // Only admins can read or write users
+      allow read: if isAdmin();
+      allow create: if isAdmin() && isValidUser(request.resource.data) && request.auth.uid == userId;
+      allow update: if isAdmin() && isValidUser(request.resource.data) && request.resource.data.createdAt == resource.data.createdAt;
+      allow delete: if isAdmin();
+    }
+  }
+}

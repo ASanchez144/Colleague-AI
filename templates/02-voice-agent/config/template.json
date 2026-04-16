@@ -1,0 +1,163 @@
+{
+  "id": "02-voice-agent",
+  "name": "Agente de Voz",
+  "version": "1.0.0",
+  "category": "communication",
+  "description": "Agente de voz automatizado que gestiona llamadas telefónicas, programación de citas y enrutamiento de llamadas mediante Retell AI. Proporciona experiencias de atención al cliente 24/7 con procesamiento de lenguaje natural y transferencia inteligente a agentes humanos.",
+  "author": "Agencia",
+  "license": "MIT",
+  "integrations": [
+    "retell-ai",
+    "twilio"
+  ],
+  "requiredEnvVars": [
+    "RETELL_API_KEY",
+    "TWILIO_ACCOUNT_SID",
+    "TWILIO_AUTH_TOKEN",
+    "TWILIO_PHONE_NUMBER"
+  ],
+  "optionalEnvVars": [
+    "OPENAI_API_KEY",
+    "LOG_LEVEL",
+    "WEBHOOK_SECRET"
+  ],
+  "defaultConfig": {
+    "language": "es",
+    "voiceId": "es-ES-Neural2-A",
+    "maxCallDuration": 300,
+    "greeting": "Bienvenido a {{company}}. ¿Cómo puedo ayudarte hoy?",
+    "transferNumber": "+34-911-234-567",
+    "recordCalls": true,
+    "enableTranscription": true,
+    "timezone": "Europe/Madrid",
+    "retryAttempts": 3,
+    "webhookTimeout": 30
+  },
+  "adaptableFields": {
+    "greeting": {
+      "type": "string",
+      "description": "Mensaje de bienvenida al iniciar la llamada",
+      "required": true,
+      "maxLength": 500
+    },
+    "voiceId": {
+      "type": "string",
+      "description": "ID de voz de Google Cloud Text-to-Speech",
+      "required": true,
+      "enum": [
+        "es-ES-Neural2-A",
+        "es-ES-Neural2-B",
+        "es-ES-Neural2-C"
+      ]
+    },
+    "callScript": {
+      "type": "object",
+      "description": "Script de conversación con ramificaciones para diferentes escenarios",
+      "required": true,
+      "properties": {
+        "mainMenu": {
+          "type": "string",
+          "description": "Menú principal de opciones"
+        },
+        "appointmentBooking": {
+          "type": "string",
+          "description": "Script para reserva de citas"
+        },
+        "billingInquiry": {
+          "type": "string",
+          "description": "Script para consultas de facturación"
+        },
+        "technicalSupport": {
+          "type": "string",
+          "description": "Script para soporte técnico"
+        }
+      }
+    },
+    "transferRules": {
+      "type": "array",
+      "description": "Reglas para transferencia a agentes humanos",
+      "required": true,
+      "items": {
+        "type": "object",
+        "properties": {
+          "trigger": {
+            "type": "string",
+            "description": "Condición que activa la transferencia"
+          },
+          "department": {
+            "type": "string",
+            "description": "Departamento al que transferir"
+          },
+          "priority": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          }
+        }
+      }
+    },
+    "businessHours": {
+      "type": "object",
+      "description": "Horario laboral para respuestas inteligentes",
+      "required": false,
+      "properties": {
+        "monday": {
+          "type": "object",
+          "properties": {
+            "start": "09:00",
+            "end": "18:00"
+          }
+        },
+        "tuesday": {
+          "type": "object",
+          "properties": {
+            "start": "09:00",
+            "end": "18:00"
+          }
+        },
+        "wednesday": {
+          "type": "object",
+          "properties": {
+            "start": "09:00",
+            "end": "18:00"
+          }
+        },
+        "thursday": {
+          "type": "object",
+          "properties": {
+            "start": "09:00",
+            "end": "18:00"
+          }
+        },
+        "friday": {
+          "type": "object",
+          "properties": {
+            "start": "09:00",
+            "end": "18:00"
+          }
+        }
+      }
+    }
+  },
+  "capabilities": [
+    "inbound-call-handling",
+    "appointment-scheduling",
+    "call-routing",
+    "call-transcription",
+    "speech-recognition",
+    "text-to-speech",
+    "human-transfer",
+    "call-recording"
+  ],
+  "requiredScopes": [
+    "calls:manage",
+    "calls:record",
+    "calls:transcribe",
+    "contacts:read"
+  ],
+  "documentation": {
+    "setup": "docs/setup.md",
+    "api": "docs/api.md",
+    "examples": "examples/"
+  }
+}

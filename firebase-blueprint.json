@@ -1,0 +1,50 @@
+{
+  "entities": {
+    "Lead": {
+      "title": "Lead",
+      "description": "A lead generated from the landing page form.",
+      "type": "object",
+      "properties": {
+        "company": { "type": "string", "description": "Company name" },
+        "sector": { "type": "string", "description": "Business sector" },
+        "team_size": { "type": "string", "description": "Team size" },
+        "tools": { "type": "array", "items": { "type": "string" }, "description": "Tools used" },
+        "other_tools": { "type": "string", "description": "Other tools" },
+        "lead_flow": { "type": "string", "description": "Current lead flow" },
+        "repetitive_tasks": { "type": "string", "description": "Repetitive tasks" },
+        "bottlenecks": { "type": "string", "description": "Bottlenecks" },
+        "magic_wand": { "type": "string", "description": "Magic wand wish" },
+        "security": { "type": "string", "description": "Security level" },
+        "name": { "type": "string", "description": "Contact name" },
+        "email": { "type": "string", "format": "email", "description": "Contact email" },
+        "phone": { "type": "string", "description": "Contact phone" },
+        "website": { "type": "string", "format": "url", "description": "Company website" },
+        "urgency": { "type": "string", "description": "Urgency" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp" },
+        "status": { "type": "string", "enum": ["new", "contacted", "qualified", "discarded"], "description": "Lead status" }
+      },
+      "required": ["company", "sector", "team_size", "name", "email", "createdAt", "status"]
+    },
+    "User": {
+      "title": "User",
+      "description": "Admin user.",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "format": "email" },
+        "role": { "type": "string", "enum": ["admin"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["email", "role", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/leads/{leadId}": {
+      "schema": { "$ref": "#/entities/Lead" },
+      "description": "Leads submitted via the landing page."
+    },
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "Admin users."
+    }
+  }
+}

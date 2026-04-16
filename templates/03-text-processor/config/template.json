@@ -1,0 +1,250 @@
+{
+  "id": "03-text-processor",
+  "name": "Procesador de Textos",
+  "version": "1.0.0",
+  "category": "productivity",
+  "description": "Procesador de textos automatizado que resume emails, gestiona bandeja de entrada, analiza comentarios y reseñas. Utiliza IA avanzada para clasificar, priorizar y generar reportes diarios de digestión de contenido.",
+  "author": "Agencia",
+  "license": "MIT",
+  "integrations": [
+    "gmail-api",
+    "outlook-api",
+    "google-reviews"
+  ],
+  "requiredEnvVars": [
+    "GMAIL_CLIENT_ID",
+    "GMAIL_CLIENT_SECRET",
+    "OPENAI_API_KEY"
+  ],
+  "optionalEnvVars": [
+    "OUTLOOK_CLIENT_ID",
+    "OUTLOOK_CLIENT_SECRET",
+    "GOOGLE_CLOUD_PROJECT_ID",
+    "LOG_LEVEL",
+    "BATCH_SCHEDULE"
+  ],
+  "defaultConfig": {
+    "summaryLanguage": "es",
+    "maxEmailsPerBatch": 50,
+    "summaryFormat": "bullet-points",
+    "summaryLength": "medium",
+    "autoReplyEnabled": false,
+    "autoClassifyEnabled": true,
+    "deduplicateContent": true,
+    "timezone": "Europe/Madrid",
+    "batchSchedule": "0 9 * * *",
+    "categories": [
+      {
+        "name": "urgent",
+        "keywords": [
+          "urgente",
+          "asap",
+          "inmediato",
+          "crítico",
+          "emergencia"
+        ],
+        "priority": 1
+      },
+      {
+        "name": "sales",
+        "keywords": [
+          "venta",
+          "presupuesto",
+          "proposal",
+          "cotización",
+          "cliente"
+        ],
+        "priority": 2
+      },
+      {
+        "name": "support",
+        "keywords": [
+          "soporte",
+          "problema",
+          "error",
+          "ayuda",
+          "ticket"
+        ],
+        "priority": 2
+      },
+      {
+        "name": "information",
+        "keywords": [
+          "información",
+          "reunión",
+          "update",
+          "noticia",
+          "anuncio"
+        ],
+        "priority": 3
+      }
+    ],
+    "priorityRules": [
+      {
+        "from": "management",
+        "priority": "high",
+        "action": "summarize"
+      },
+      {
+        "from": "vip-clients",
+        "priority": "high",
+        "action": "alert"
+      },
+      {
+        "subject": "urgent|asap|critical",
+        "priority": "high",
+        "action": "alert"
+      }
+    ]
+  },
+  "adaptableFields": {
+    "categories": {
+      "type": "array",
+      "description": "Categorías personalizadas para clasificación de emails",
+      "required": true,
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Nombre de la categoría"
+          },
+          "keywords": {
+            "type": "array",
+            "description": "Palabras clave para detectar esta categoría",
+            "items": {
+              "type": "string"
+            }
+          },
+          "priority": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5,
+            "description": "Prioridad de procesamiento"
+          }
+        }
+      }
+    },
+    "summaryFormat": {
+      "type": "string",
+      "description": "Formato de resumen generado",
+      "required": true,
+      "enum": [
+        "bullet-points",
+        "paragraph",
+        "executive-summary",
+        "structured-json",
+        "markdown"
+      ]
+    },
+    "summaryLength": {
+      "type": "string",
+      "description": "Longitud del resumen",
+      "enum": [
+        "brief",
+        "medium",
+        "comprehensive"
+      ]
+    },
+    "autoReplyTemplates": {
+      "type": "object",
+      "description": "Plantillas de respuesta automática por categoría",
+      "required": false,
+      "properties": {
+        "out-of-office": {
+          "type": "string",
+          "description": "Respuesta para fuera de oficina"
+        },
+        "auto-confirm": {
+          "type": "string",
+          "description": "Confirmación automática de recepción"
+        },
+        "support-ticket": {
+          "type": "string",
+          "description": "Respuesta para tickets de soporte"
+        }
+      }
+    },
+    "priorityRules": {
+      "type": "array",
+      "description": "Reglas personalizadas para asignación de prioridad",
+      "required": false,
+      "items": {
+        "type": "object",
+        "properties": {
+          "from": {
+            "type": "string",
+            "description": "Email o grupo del remitente"
+          },
+          "subject": {
+            "type": "string",
+            "description": "Patrón de asunto (regex)"
+          },
+          "priority": {
+            "type": "string",
+            "enum": [
+              "low",
+              "normal",
+              "high",
+              "critical"
+            ]
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "skip",
+              "summarize",
+              "alert",
+              "forward",
+              "label"
+            ]
+          }
+        }
+      }
+    },
+    "digestReportTemplate": {
+      "type": "object",
+      "description": "Plantilla para reporte diario de digestión",
+      "required": false,
+      "properties": {
+        "includeStats": {
+          "type": "boolean",
+          "description": "Incluir estadísticas de emails"
+        },
+        "includeTrends": {
+          "type": "boolean",
+          "description": "Incluir análisis de tendencias"
+        },
+        "includeActionItems": {
+          "type": "boolean",
+          "description": "Incluir items de acción pendientes"
+        },
+        "groupByCategory": {
+          "type": "boolean",
+          "description": "Agrupar por categoría en el reporte"
+        }
+      }
+    }
+  },
+  "capabilities": [
+    "email-summarization",
+    "inbox-management",
+    "email-classification",
+    "review-analysis",
+    "sentiment-analysis",
+    "daily-digest",
+    "auto-reply",
+    "priority-detection",
+    "content-deduplication"
+  ],
+  "requiredScopes": [
+    "gmail:readonly",
+    "gmail:modify",
+    "calendar:readonly"
+  ],
+  "documentation": {
+    "setup": "docs/setup.md",
+    "api": "docs/api.md",
+    "examples": "examples/"
+  }
+}

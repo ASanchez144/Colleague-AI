@@ -1,0 +1,91 @@
+version: '3.8'
+
+# =====================================================================
+#  Evolution API — Tu Socia! WhatsApp Stack
+#
+#  Levanta Evolution API (wrapper REST sobre Baileys / WhatsApp Web)
+#  junto con su base de datos PostgreSQL y Redis.
+#
+#  Uso rápido:
+#    docker compose up -d
+#    # Luego visita: http://localhost:3002/webhook/whatsapp/qr
+# =====================================================================
+
+services:
+
+  # ─── Evolution API ─────────────────────────────────────────────
+  evolution-api:
+    image: atendai/evolution-api:v2.2.3
+    container_name: tusocia-evolution
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      # ⚠️  Cambia este valor en producción — es la llave maestra de la API
+      AUTHENTICATION_API_KEY: ${EVOLUTION_API_KEY:-tusocia-secret-key}
+
+      # Base de datos
+      DATABASE_ENABLED: 'true'
+      DATABASE_PROVIDER: postgresql
+      DATABASE_CONNECTION_URI: postgresql://tusocia:tusocia_pass@postgres:5432/evolution
+
+      # Redis (caché de sesiones)
+      CACHE_REDIS_ENABLED: 'true'
+      CACHE_REDIS_URI: redis://redis:6379/1
+
+      # Configuración de la instancia
+      DEL_INSTANCE: 'false'
+      QRCODE_LIMIT: 30
+
+      # URL donde Evolution hará el callback de mensajes
+      # Apunta a nuestro servidor Node (debe ser accesible desde dentro del contenedor)
+      WEBHOOK_GLOBAL_URL: ${WEBHOOK_CALLBACK_URL:-http://host.docker.internal:3002/webhook/whatsapp}
+      WEBHOOK_GLOBAL_ENABLED: 'true'
+      WEBHOOK_GLOBAL_WEBHOOK_BY_EVENTS: 'false'
+
+    volumes:
+      - evolution_data:/evolution/instances
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  # ─── PostgreSQL ─────────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: tusocia-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: tusocia
+      POSTGRES_PASSWORD: tusocia_pass
+      POSTGRES_DB: evolution
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tusocia -d evolution"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "5432:5432"
+
+  # ─── Redis ──────────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: tusocia-redis
+    restart: always
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    volumes:
+      - redis_data:/data
+
+volumes:
+  evolution_data:
+  postgres_data:
+  redis_data:

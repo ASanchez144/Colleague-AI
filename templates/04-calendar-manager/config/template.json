@@ -1,0 +1,85 @@
+{
+  "id": "04-calendar-manager",
+  "name": "Gestor de Calendarios",
+  "description": "Agente de gestión de calendarios con capacidades de programación automatizada, gestión de reservas, recordatorios inteligentes y seguimiento de disponibilidad. Integra múltiples plataformas de calendario para sincronización en tiempo real.",
+  "version": "1.0.0",
+  "category": "scheduling",
+  "integrations": [
+    "google-calendar",
+    "cal-com",
+    "calendly"
+  ],
+  "requiredEnvVars": [
+    "GOOGLE_CALENDAR_CLIENT_ID",
+    "GOOGLE_CALENDAR_CLIENT_SECRET",
+    "GOOGLE_CALENDAR_REFRESH_TOKEN"
+  ],
+  "defaultConfig": {
+    "timezone": "Europe/Madrid",
+    "language": "es",
+    "slotDuration": 30,
+    "bufferTime": 15,
+    "maxAdvanceBookingDays": 30,
+    "reminderMinutes": [1440, 60],
+    "workingHours": {
+      "monday": {
+        "start": "09:00",
+        "end": "18:00",
+        "enabled": true
+      },
+      "tuesday": {
+        "start": "09:00",
+        "end": "18:00",
+        "enabled": true
+      },
+      "wednesday": {
+        "start": "09:00",
+        "end": "18:00",
+        "enabled": true
+      },
+      "thursday": {
+        "start": "09:00",
+        "end": "18:00",
+        "enabled": true
+      },
+      "friday": {
+        "start": "09:00",
+        "end": "18:00",
+        "enabled": true
+      },
+      "saturday": {
+        "start": "10:00",
+        "end": "14:00",
+        "enabled": false
+      },
+      "sunday": {
+        "start": "00:00",
+        "end": "00:00",
+        "enabled": false
+      }
+    }
+  },
+  "adaptableFields": [
+    "workingHours",
+    "slotDuration",
+    "bufferTime",
+    "services",
+    "reminderMessages",
+    "bookingConfirmationTemplate",
+    "timezone",
+    "maxAdvanceBookingDays"
+  ],
+  "capabilities": [
+    "booking-creation",
+    "availability-checking",
+    "reminder-management",
+    "booking-rescheduling",
+    "calendar-sync",
+    "conflict-resolution"
+  ],
+  "webhookEndpoints": {
+    "onBookingCreated": "/api/webhooks/booking-created",
+    "onReminderSent": "/api/webhooks/reminder-sent",
+    "onBookingCancelled": "/api/webhooks/booking-cancelled"
+  }
+}

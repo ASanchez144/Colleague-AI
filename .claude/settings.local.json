@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm start:*)",
+      "mcp__c1fc4002-5f49-5f9d-a4e5-93c4ef5d6a75__google_drive_search",
+      "Bash(Get-Process powershell:*)",
+      "Bash(Where-Object { $_ommandLine -match \"AegisEngine\" })",
+      "Bash(Stop-Process -Force)",
+      "Bash(powershell -Command \"Get-Process powershell -ErrorAction SilentlyContinue | Where-Object { $_CommandLine -match ''AegisEngine'' } | Stop-Process -Force; Write-Host ''Engine detenido''\")",
+      "Bash(powershell -Command \"Get-Process powershell | Where-Object { $_CommandLine -match ''AegisEngine'' } | Select-Object Id, CPU\")"
+    ]
+  }
+}
