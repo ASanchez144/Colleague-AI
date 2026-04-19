@@ -1,0 +1,51 @@
+# ============================================================
+#  Tu Socia! — PM2 resurrect (servidor Express + bot WhatsApp + frontend)
+#  Ruta destino: /etc/systemd/system/tusocia-pm2.service
+#  Instalación:  sudo systemctl daemon-reload && \
+#                sudo systemctl enable --now tusocia-pm2
+# ============================================================
+#
+# Esta unit es ALTERNATIVA al clásico `pm2 startup`, y es más fiable porque
+# no depende del script que PM2 genera en caliente (que a veces tiene PATHs
+# rotos tras un `nvm use`). Lo que hace:
+#
+#   1. Al boot, espera a la red.
+#   2. Llama a `pm2 resurrect` con el PM2_HOME correcto, que restaura todos
+#      los procesos guardados con `pm2 save` (tusocia-server, tusocia-whatsapp,
+#      tusocia-frontend).
+#   3. Queda "activa" mientras el daemon de PM2 viva. Si muere, la relanza.
+#
+# IMPORTANTE: ajusta NODE_BIN si tu node no está en /usr/local/bin/node
+# (p.ej. si usas nvm, apunta a ~/.nvm/versions/node/vXX/bin).
+#
+
+[Unit]
+Description=Tu Socia — PM2 processes (server, whatsapp bot, frontend)
+Documentation=https://pm2.keymetrics.io/docs/usage/startup/
+After=network-online.target tusocia-orchestrator.service
+Wants=network-online.target
+
+[Service]
+Type=forking
+User=root
+Group=root
+Environment=PM2_HOME=/root/.pm2
+Environment=NODE_ENV=production
+# Si usas nvm, cambia esta línea a:
+#   Environment=PATH=/root/.nvm/versions/node/v22.11.0/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+Environment=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+WorkingDirectory=/root/tusocia
+PIDFile=/root/.pm2/pm2.pid
+
+ExecStart=/usr/local/bin/pm2 resurrect
+ExecReload=/usr/local/bin/pm2 reload all
+ExecStop=/usr/local/bin/pm2 kill
+
+Restart=on-failure
+RestartSec=10
+TimeoutStartSec=60
+# PM2 abre y cierra muchos descriptores; subimos el límite.
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target

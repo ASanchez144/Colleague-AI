@@ -1,0 +1,18 @@
+# ============================================================
+#  Tu Socia! — Timer del healthcheck
+#  Ruta destino: /etc/systemd/system/tusocia-healthcheck.timer
+#  Arranca:      60s tras el boot, luego cada minuto.
+# ============================================================
+[Unit]
+Description=Tu Socia — ejecuta el healthcheck cada minuto
+Requires=tusocia-healthcheck.service
+
+[Timer]
+OnBootSec=60s
+OnUnitActiveSec=60s
+AccuracySec=5s
+Unit=tusocia-healthcheck.service
+Persistent=true
+
+[Install]
+WantedBy=timers.target

@@ -2,6 +2,8 @@
 
 Todos los comandos que necesitas ejecutar en el servidor, en orden.
 
+> **⚡ Atajo:** si quieres dejar el servidor listo (incluido Ollama + Claude Code + PM2 + watchdog) con un único comando y que sobreviva a reinicios, salta directamente a `infra/README.md` y ejecuta `sudo bash infra/setup/bootstrap.sh`. El resto de este documento es la versión manual paso a paso.
+
 ---
 
 ## PASO 0 — Prerequisitos del servidor

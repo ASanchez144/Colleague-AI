@@ -1,0 +1,37 @@
+# ============================================================
+#  Tu Socia! — Orquestador Claude (tmux + Claude Code + Ollama)
+#  Ruta destino: /etc/systemd/system/tusocia-orchestrator.service
+#  Instalación:  sudo systemctl daemon-reload && \
+#                sudo systemctl enable --now tusocia-orchestrator
+# ============================================================
+
+[Unit]
+Description=Tu Socia — Claude orchestrator (Claude Code over Ollama, in tmux)
+Documentation=https://docs.ollama.com/integrations/claude-code
+After=network-online.target ollama.service
+Wants=network-online.target
+Requires=ollama.service
+
+[Service]
+Type=simple
+User=root
+Group=root
+EnvironmentFile=/etc/tusocia/orchestrator.env
+WorkingDirectory=/root/tusocia
+ExecStart=/root/tusocia/infra/orchestrator/launch-orchestrator.sh
+# Si el launcher sale (tmux muerto, ollama reiniciando, etc.), relanza.
+Restart=always
+RestartSec=10
+# Límite razonable: si falla 5 veces en 5 min, ponemos el servicio en
+# "failed" para que no oculte un problema real.
+StartLimitIntervalSec=300
+StartLimitBurst=5
+# Logs a journal (consultables con `journalctl -u tusocia-orchestrator -f`)
+StandardOutput=journal
+StandardError=journal
+# Permite matar todos los hijos (tmux server, claude, etc.) en un stop/restart.
+KillMode=mixed
+TimeoutStopSec=20
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,18 @@
+# ============================================================
+#  Tu Socia! — Healthcheck oneshot
+#  Ruta destino: /etc/systemd/system/tusocia-healthcheck.service
+#  Disparado por: tusocia-healthcheck.timer (cada 60s)
+# ============================================================
+[Unit]
+Description=Tu Socia — healthcheck (Ollama + orchestrator + PM2 + endpoints)
+After=network-online.target ollama.service tusocia-orchestrator.service tusocia-pm2.service
+
+[Service]
+Type=oneshot
+User=root
+Group=root
+ExecStart=/root/tusocia/infra/health/healthcheck.sh
+# No consideramos "failed" un resultado de "hubo problema pero se arregló".
+SuccessExitStatus=0 1
+StandardOutput=journal
+StandardError=journal
