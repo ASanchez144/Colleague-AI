@@ -150,8 +150,7 @@ ok "PM2 procesos arrancados y persistidos"
 
 # ── 7. orquestador + healthcheck ────────────────────────────
 log "[7/8] Habilitando tusocia-orchestrator y healthcheck…"
-chmod +x "$INFRA_DIR/orchestrator/launch-orchestrator.sh"
-chmod +x "$INFRA_DIR/health/healthcheck.sh" 2>/dev/null || true
+find "$INFRA_DIR" -type f -name '*.sh' -exec chmod +x {} \;
 
 systemctl enable --now tusocia-orchestrator.service
 systemctl enable --now tusocia-healthcheck.timer
