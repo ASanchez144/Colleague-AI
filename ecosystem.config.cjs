@@ -20,10 +20,9 @@ module.exports = {
     // ─── 1. BACKEND — Express webhook ──────────────────────────────
     {
       name: 'tusocia-server',
-      script: 'tsx',
-      args: 'index.ts',
+      script: 'npx',
+      args: 'tsx index.ts',
       cwd: './server',
-      interpreter: 'none',
       watch: false,
       autorestart: true,
       max_restarts: 10,
@@ -48,10 +47,9 @@ module.exports = {
     //     Recibe mensajes de WA y responde vía EvolutionAPI REST
     {
       name: 'tusocia-whatsapp',
-      script: 'tsx',
-      args: 'src/webhookServer.ts',
+      script: 'npx',
+      args: 'tsx src/webhookServer.ts',
       cwd: './templates/01-whatsapp-agent',
-      interpreter: 'none',
       watch: false,
       autorestart: true,
       max_restarts: 10,

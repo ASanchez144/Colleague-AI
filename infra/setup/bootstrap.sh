@@ -68,7 +68,12 @@ ok "Node $(node -v) / npm $(npm -v)"
 
 # pm2 + tsx globales
 if ! command -v pm2 >/dev/null 2>&1; then
-  npm install -g pm2 tsx >/dev/null
+  log "Instalando PM2 global..."
+  npm install -g pm2 >/dev/null
+fi
+if ! command -v tsx >/dev/null 2>&1; then
+  log "Instalando tsx global..."
+  npm install -g tsx >/dev/null
 fi
 ok "pm2 $(pm2 -v) / tsx $(tsx --version 2>/dev/null || echo 'ok')"
 
