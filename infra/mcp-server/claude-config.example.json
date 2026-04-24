@@ -1,0 +1,82 @@
+{
+  "_instrucciones": {
+    "que_es_esto": "Este archivo muestra cómo configurar Claude Code en tu laptop Windows para que se conecte al servidor remoto vía SSH y pueda usar las herramientas del MCP Server.",
+    "donde_pegarlo": "Copia el bloque 'mcpServers' dentro de tu archivo: C:\\Users\\artur\\AppData\\Roaming\\Claude\\claude_desktop_config.json",
+    "si_no_existe": "Si el archivo no existe, créalo con el contenido exacto de 'config_completa_si_no_existe' que ves más abajo.",
+    "antes_de_usar": [
+      "1. Reemplaza TU_USUARIO con tu usuario del servidor (ej: ubuntu, root, artur)",
+      "2. Reemplaza TU_IP_SERVIDOR con la IP del VPS (ej: 185.234.XXX.XXX)",
+      "3. Asegúrate de que el servidor tiene instalado el MCP: bash scripts/setup-mcp-remote.sh",
+      "4. Guarda el archivo y reinicia Claude Code completamente"
+    ]
+  },
+
+  "config_completa_si_no_existe": {
+    "mcpServers": {
+      "tusocia-production": {
+        "command": "ssh",
+        "args": [
+          "-i", "C:/Users/artur/.ssh/id_rsa_artur",
+          "-o", "StrictHostKeyChecking=no",
+          "-o", "ServerAliveInterval=30",
+          "TU_USUARIO@TU_IP_SERVIDOR",
+          "cd /opt/tusocia/mcp-server && npx tsx index.ts"
+        ],
+        "description": "Servidor de producción Tu Socia! — herramientas: run_command, write_file, read_file, pm2_status, full_deploy, docker_status"
+      }
+    }
+  },
+
+  "solo_el_bloque_si_ya_tienes_el_archivo": {
+    "mcpServers": {
+      "tusocia-production": {
+        "command": "ssh",
+        "args": [
+          "-i", "C:/Users/artur/.ssh/id_rsa_artur",
+          "-o", "StrictHostKeyChecking=no",
+          "-o", "ServerAliveInterval=30",
+          "TU_USUARIO@TU_IP_SERVIDOR",
+          "cd /opt/tusocia/mcp-server && npx tsx index.ts"
+        ],
+        "description": "Servidor de producción Tu Socia! — herramientas: run_command, write_file, read_file, pm2_status, full_deploy, docker_status"
+      }
+    }
+  },
+
+  "verificar_que_funciona": {
+    "paso_1": "Abre Claude Code en tu laptop",
+    "paso_2": "Ejecuta: /mcp",
+    "paso_3": "Deberías ver 'tusocia-production' con estado 'connected'",
+    "paso_4": "Prueba con: 'usa la herramienta pm2_status del servidor de producción'",
+    "si_da_error_connection_refused": "El servidor no tiene el MCP corriendo. Conéctate por SSH y ejecuta: bash /opt/tusocia/app/scripts/setup-mcp-remote.sh",
+    "si_da_error_permission_denied": "La clave SSH no tiene acceso. Verifica que id_rsa_artur.pub está en ~/.ssh/authorized_keys del servidor.",
+    "si_da_error_host_key": "Añade '-o StrictHostKeyChecking=no' ya está incluido. Si persiste, borra el host de known_hosts: ssh-keygen -R TU_IP_SERVIDOR"
+  },
+
+  "herramientas_disponibles_una_vez_conectado": {
+    "run_command": {
+      "descripcion": "Ejecuta cualquier comando en el servidor",
+      "ejemplo": "'ejecuta pm2 status en el servidor'"
+    },
+    "write_file": {
+      "descripcion": "Crea o sobreescribe un archivo",
+      "ejemplo": "'escribe este contenido en server/.env del servidor'"
+    },
+    "read_file": {
+      "descripcion": "Lee un archivo del servidor",
+      "ejemplo": "'lee el archivo logs/app.log del servidor'"
+    },
+    "pm2_status": {
+      "descripcion": "Estado de todos los procesos PM2",
+      "ejemplo": "'dime el estado de PM2 en producción'"
+    },
+    "full_deploy": {
+      "descripcion": "Deploy completo: git pull + install + build + restart",
+      "ejemplo": "'haz un deploy completo de la rama main'"
+    },
+    "docker_status": {
+      "descripcion": "Estado de los contenedores Docker del bot WhatsApp",
+      "ejemplo": "'dime el estado de Docker del cliente abc123'"
+    }
+  }
+}

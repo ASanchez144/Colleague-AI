@@ -15,7 +15,7 @@ services:
 
   # ─── Evolution API ─────────────────────────────────────────────
   evolution-api:
-    image: atendai/evolution-api:v2.2.3
+    image: atendai/evolution-api:latest
     container_name: tusocia-evolution
     restart: always
     ports:
@@ -42,6 +42,10 @@ services:
       WEBHOOK_GLOBAL_URL: ${WEBHOOK_CALLBACK_URL:-http://host.docker.internal:3002/webhook/whatsapp}
       WEBHOOK_GLOBAL_ENABLED: 'true'
       WEBHOOK_GLOBAL_WEBHOOK_BY_EVENTS: 'false'
+
+      # Versión de WhatsApp Web para Baileys — IMPORTANTE: actualizar si WA rechaza con 405
+      # Obtener la última: node -e "require('@whiskeysockets/baileys').fetchLatestBaileysVersion().then(v=>console.log(v))"
+      CONFIG_SESSION_PHONE_VERSION: '2.3000.1035194821'
 
     volumes:
       - evolution_data:/evolution/instances

@@ -3,23 +3,34 @@
 #  Tu Socia! — Keepalive de `claude` dentro de tmux
 #
 #  Bucle que mantiene a `claude` vivo pase lo que pase:
+#   - Source del env propio (self-contained, no depende de quién lo lance)
 #   - Espera a que Ollama responda antes de cada arranque.
-#   - Si `claude` sale por cualquier razón (Ollama parpadeó, Ctrl+C,
-#     crash del modelo), imprime el motivo y reintenta tras backoff.
+#   - Usa --continue para retomar la conversación anterior.
 #   - Backoff exponencial con techo (max 60s entre intentos).
-#
-#  Se lanza desde launch-orchestrator.sh y vive dentro del pane
-#  "tusocia:claude" de tmux.
 # ============================================================
 set -uo pipefail
 
-# Las envs llegan exportadas desde launch-orchestrator.sh
-: "${ANTHROPIC_BASE_URL:?falta ANTHROPIC_BASE_URL}"
-: "${CLAUDE_MODEL:?falta CLAUDE_MODEL}"
+# ── Source del env propio — funciona independientemente de cómo se lance ──────
+# Esto hace el script self-contained: si lo lanza tmux, systemd, o root directo,
+# siempre tendrá las variables correctas.
+if [[ -f /etc/tusocia/orchestrator.env ]]; then
+  set -a
+  # shellcheck source=/etc/tusocia/orchestrator.env
+  source /etc/tusocia/orchestrator.env
+  set +a
+fi
+
+# Validar que las variables críticas existen
+: "${ANTHROPIC_BASE_URL:?falta ANTHROPIC_BASE_URL en /etc/tusocia/orchestrator.env}"
+: "${CLAUDE_MODEL:?falta CLAUDE_MODEL en /etc/tusocia/orchestrator.env}"
+: "${TUSOCIA_HOME:=/root/tusocia}"
 
 BACKOFF=2
 MAX_BACKOFF=60
 ATTEMPT=0
+
+# Fichero que marca si ya hubo una sesión previa (para --continue)
+LAST_SESSION_FILE="${TUSOCIA_HOME}/.claude_last_session"
 
 banner() {
   local msg="$1"
@@ -40,7 +51,7 @@ wait_for_ollama() {
     sleep 2
   done
   printf '\n'
-  echo "[keepalive] ✗ Ollama sigue KO tras 180s. Relanzo igual y dejo que claude falle rápido."
+  echo "[keepalive] ✗ Ollama sigue KO tras 180s. Relanzo igual."
   return 1
 }
 
@@ -52,23 +63,43 @@ while true; do
 
   wait_for_ollama
 
-  # Arranca Claude Code. --dangerously-skip-permissions nos evita prompts
-  # interactivos al ejecutar tools cuando el orquestador tiene que trabajar solo.
-  # Si prefieres confirmar cada acción, quita ese flag.
-  if claude --model "$CLAUDE_MODEL" --dangerously-skip-permissions; then
-    EXIT_REASON="salida limpia"
+  cd "${TUSOCIA_HOME}"
+
+  # Decidir si usar --continue (retoma conversación previa) o arrancar fresh
+  # --continue preserva el historial de herramientas y decisiones pasadas
+  CONTINUE_FLAG=""
+  if [[ -f "${LAST_SESSION_FILE}" ]]; then
+    CONTINUE_FLAG="--continue"
+    echo "[keepalive] Retomando sesión anterior (--continue)…"
   else
-    EXIT_REASON="exit code $?"
+    echo "[keepalive] Primera sesión — arrancando fresh…"
+    touch "${LAST_SESSION_FILE}"
   fi
 
-  banner "claude terminó ($EXIT_REASON). Reintento en ${BACKOFF}s."
-  sleep "$BACKOFF"
+  # Arranca Claude Code
+  # --dangerously-skip-permissions: evita prompts interactivos
+  # --continue: retoma la última conversación (preserva "memoria" de la sesión)
+  if claude \
+      --model "${CLAUDE_MODEL}" \
+      --dangerously-skip-permissions \
+      ${CONTINUE_FLAG}; then
+    EXIT_REASON="salida limpia"
+  else
+    EXIT_CODE=$?
+    EXIT_REASON="exit code ${EXIT_CODE}"
+    # Si falla con error de permisos de root, intentar sin --dangerously-skip-permissions
+    if [[ ${EXIT_CODE} -eq 1 ]] && [[ -z "${CONTINUE_FLAG}" ]]; then
+      echo "[keepalive] Reintentando sin --dangerously-skip-permissions…"
+      claude --model "${CLAUDE_MODEL}" ${CONTINUE_FLAG} || true
+    fi
+  fi
 
-  # Backoff exponencial con techo — evita flood si algo está realmente roto
+  banner "claude terminó (${EXIT_REASON}). Reintento en ${BACKOFF}s."
+  sleep "${BACKOFF}"
+
   BACKOFF=$(( BACKOFF * 2 ))
-  (( BACKOFF > MAX_BACKOFF )) && BACKOFF=$MAX_BACKOFF
+  (( BACKOFF > MAX_BACKOFF )) && BACKOFF=${MAX_BACKOFF}
 
-  # Tras 5 minutos sin fallos seguidos, reseteamos el backoff
   if (( ATTEMPT > 1 )) && (( SECONDS % 300 == 0 )); then
     BACKOFF=2
   fi
