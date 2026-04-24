@@ -4,6 +4,7 @@
  *
  * Endpoints:
  *   POST /api/webhook/lead     → Recibe formularios de la web
+ *   POST /api/notify-lead      → Proxy de notificaciones (llamado desde Supabase Edge Function)
  *   GET  /api/leads             → Lista leads registrados (admin)
  *   GET  /api/leads/:id         → Detalle de un lead
  *   GET  /api/health            → Health check
@@ -50,31 +51,11 @@ app.get('/api/health', (_req, res) => {
 
 // ─── WEBHOOK: Recibir nuevo lead del formulario ──────
 app.post('/api/webhook/lead', async (req, res) => {
-  // ╔══ DIAGNÓSTICO PASO 1: ENTRADA DEL WEBHOOK ══════════════════════╗
-  console.log('\n\n============================================================');
-  console.log('[DIAG] 📥 WEBHOOK RECIBIDO:', new Date().toISOString());
-  console.log('[DIAG] Headers relevantes:', {
-    'content-type': req.headers['content-type'],
-    origin: req.headers['origin'],
-    'x-forwarded-for': req.headers['x-forwarded-for']
-  });
-  console.log('[DIAG] Body completo:', JSON.stringify(req.body, null, 2));
-  console.log('[DIAG] ENV críticas:', {
-    RESEND_API_KEY: process.env.RESEND_API_KEY ? `✅ presente (${process.env.RESEND_API_KEY.slice(0,8)}...)` : '❌ AUSENTE',
-    FROM_EMAIL: process.env.FROM_EMAIL || '⚠️  no definido (usará hola@tusocia.es)',
-    ADMIN_EMAIL: process.env.ADMIN_EMAIL || '⚠️  no definido (usará arturoeldeteruel@gmail.com)',
-    EVOLUTION_API_URL: process.env.EVOLUTION_API_URL || '❌ AUSENTE — WhatsApp no configurado',
-    WHATSAPP_GROUP_ID: process.env.WHATSAPP_GROUP_ID || '❌ AUSENTE — WhatsApp no configurado',
-  });
-  console.log('============================================================\n');
-  // ╚════════════════════════════════════════════════════════════════╝
-
   try {
     const payload = req.body;
 
     // Validación mínima
     if (!payload.name || !payload.email) {
-      console.log('[DIAG] ❌ Validación fallida — name o email ausentes');
       return res.status(400).json({
         error: 'Campos requeridos: name, email'
       });
@@ -86,7 +67,6 @@ app.post('/api/webhook/lead', async (req, res) => {
     logger.info(`📥 Nuevo lead recibido: ${payload.name} (${payload.email})`, { leadId });
 
     // ─── PASO 1: Registrar el lead ───────────────────
-    console.log(`[DIAG] 💾 PASO 1 — Intentando registrar lead ${leadId}...`);
     const lead = await registerLead({
       id: leadId,
       ...payload,
@@ -98,12 +78,10 @@ app.post('/api/webhook/lead', async (req, res) => {
         agentCreated: false
       }
     });
-    console.log(`[DIAG] ✅ PASO 1 OK — Lead registrado:`, JSON.stringify(lead, null, 2));
 
     logger.info(`✅ Lead registrado: ${leadId}`);
 
     // ─── PASO 2: Enviar email de bienvenida ──────────
-    console.log(`\n[DIAG] 📧 PASO 2 — Intentando enviar email de bienvenida a: ${payload.email}`);
     try {
       await sendWelcomeEmail({
         to: payload.email,
@@ -115,21 +93,14 @@ app.post('/api/webhook/lead', async (req, res) => {
         status: 'email_sent',
         'pipeline.emailSent': true
       });
-      console.log(`[DIAG] ✅ PASO 2 OK — Email enviado a ${payload.email}`);
       logger.info(`📧 Email de bienvenida enviado a ${payload.email}`);
     } catch (emailError: any) {
-      console.log(`[DIAG] ❌ PASO 2 FALLÓ — Error enviando email:`);
-      console.log(`[DIAG]   Mensaje: ${emailError?.message}`);
-      console.log(`[DIAG]   Stack:   ${emailError?.stack}`);
-      console.log(`[DIAG]   Raw:     ${JSON.stringify(emailError)}`);
       logger.error(`❌ Error enviando email: ${emailError}`);
       // No bloqueamos el pipeline por un fallo de email
     }
 
     // ─── PASO 3: Análisis y enrutamiento a template ──
-    console.log(`\n[DIAG] 🔀 PASO 3 — Ejecutando routeToTemplate...`);
     const routing = routeToTemplate(payload);
-    console.log(`[DIAG] ✅ PASO 3 OK — Resultado routing:`, JSON.stringify(routing, null, 2));
     await updateLeadStatus(leadId, {
       status: 'routed',
       'pipeline.templateAssigned': routing.templateId,
@@ -142,39 +113,22 @@ app.post('/api/webhook/lead', async (req, res) => {
       reasoning: routing.reasoning
     });
 
-    // ─── PASO 3b: Notificar al admin ─────────────────
-    // ╔══ DIAGNÓSTICO PASO 3b: NOTIFICACIÓN ADMIN (EMAIL) ═══════════╗
-    console.log(`\n[DIAG] 🔔 PASO 3b — Disparando notifyAdmin...`);
-    console.log(`[DIAG] ⚠️  NOTA: notifyAdmin SOLO envía email — NO hay llamada a WhatsApp/EvolutionAPI en el código actual`);
-    // ╚════════════════════════════════════════════════════════════════╝
+    // ─── PASO 3b: Notificar al admin (email) ─────────
     notifyAdmin({
       leadId,
       name: payload.name,
       company: payload.company || '—',
       email: payload.email,
       templateAssigned: routing.templateName
-    }).then(() => {
-      console.log(`[DIAG] ✅ PASO 3b OK — notifyAdmin completado`);
-    }).catch(e => {
-      console.log(`[DIAG] ❌ PASO 3b FALLÓ — notifyAdmin error:`, e?.message, JSON.stringify(e));
-      logger.warn('Admin notify silenced:', e);
-    });
+    }).catch(e => logger.warn('Admin notify silenced:', e));
 
-    // ─── PASO 3c: Notificación WhatsApp (NO IMPLEMENTADO) ────────────
-    // ╔══ DIAGNÓSTICO PASO 3c: WHATSAPP ════════════════════════════════╗
+    // ─── PASO 3c: Notificación WhatsApp ──────────────
     const evolutionUrl = process.env.EVOLUTION_API_URL;
     const evolutionKey = process.env.EVOLUTION_API_KEY;
     const groupId = process.env.WHATSAPP_GROUP_ID;
-    if (!evolutionUrl || !groupId) {
-      console.log(`\n[DIAG] ⚠️  PASO 3c — WhatsApp NO configurado:`);
-      console.log(`[DIAG]   EVOLUTION_API_URL: ${evolutionUrl || 'NO DEFINIDA'}`);
-      console.log(`[DIAG]   WHATSAPP_GROUP_ID: ${groupId || 'NO DEFINIDA'}`);
-      console.log(`[DIAG]   → Esto explica por qué no llegan mensajes de WhatsApp`);
-    } else {
-      console.log(`\n[DIAG] 📱 PASO 3c — EvolutionAPI configurada, intentando envío WhatsApp...`);
-      console.log(`[DIAG]   URL: ${evolutionUrl} | Group: ${groupId}`);
-      // Intento real de envío para diagnóstico
-      const instanceName = process.env.EVOLUTION_INSTANCE_NAME || 'tu-socia';
+    const instanceName = process.env.EVOLUTION_INSTANCE_NAME || 'tu-socia';
+
+    if (evolutionUrl && groupId) {
       fetch(`${evolutionUrl}/message/sendText/${instanceName}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'apikey': evolutionKey || '' },
@@ -184,14 +138,11 @@ app.post('/api/webhook/lead', async (req, res) => {
         })
       })
         .then(r => r.json())
-        .then(data => console.log(`[DIAG] ✅ PASO 3c OK — WhatsApp response:`, JSON.stringify(data)))
-        .catch(err => console.log(`[DIAG] ❌ PASO 3c FALLÓ — WhatsApp error:`, err?.message));
-
+        .then(data => logger.info(`📱 WhatsApp enviado`, { response: JSON.stringify(data) }))
+        .catch(err => logger.error(`❌ WhatsApp error: ${err?.message}`));
     }
-    // ╚════════════════════════════════════════════════════════════════╝
 
     // ─── PASO 4: Responder al frontend ───────────────
-    console.log(`\n[DIAG] ✅ PASO 4 — Enviando respuesta 201 al frontend`);
     res.status(201).json({
       success: true,
       leadId,
@@ -206,9 +157,6 @@ app.post('/api/webhook/lead', async (req, res) => {
     // TODO: dispatchAgentCreation(leadId, routing.templateId, payload);
 
   } catch (error: any) {
-    console.log(`\n[DIAG] 💥 ERROR GLOBAL EN WEBHOOK:`);
-    console.log(`[DIAG]   Mensaje: ${error?.message}`);
-    console.log(`[DIAG]   Stack:   ${error?.stack}`);
     logger.error('❌ Error en webhook:', error);
     res.status(500).json({
       error: 'Error interno del servidor',
@@ -242,35 +190,62 @@ app.get('/api/leads/:id', async (req, res) => {
   }
 });
 
-// ─── SUPABASE PROXY: WhatsApp notify ────────────────
-// Llamado por la Edge Function de Supabase para enviar notificaciones WhatsApp
-app.post('/api/notify-whatsapp', async (req, res) => {
+// ─── SUPABASE PROXY: Notificaciones completas (Email Gmail + WhatsApp) ──────
+// La Edge Function llama aquí — este servidor tiene Gmail SMTP y Evolution API
+app.post('/api/notify-lead', async (req, res) => {
   const { name, email, company, templateName, leadId } = req.body;
-  const evolutionUrl = process.env.EVOLUTION_API_URL;
-  const evolutionKey = process.env.EVOLUTION_API_KEY;
-  const groupId = process.env.WHATSAPP_GROUP_ID;
-  const instanceName = process.env.EVOLUTION_INSTANCE_NAME || 'tu-socia';
+  const results: Record<string, any> = {};
 
-  if (!evolutionUrl || !groupId) {
-    return res.status(500).json({ error: 'WhatsApp no configurado' });
-  }
-
+  // ── Email de bienvenida al cliente ──────────────────────────────────────────
   try {
-    const r = await fetch(`${evolutionUrl}/message/sendText/${instanceName}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'apikey': evolutionKey || '' },
-      body: JSON.stringify({
-        number: groupId,
-        text: `🔔 *Nuevo lead:* ${name} (${company || '—'})\n📧 ${email}\n🤖 Template: ${templateName}\n🆔 ${leadId}`
-      })
-    });
-    const data = await r.json();
-    logger.info('📱 WhatsApp enviado desde proxy Supabase', { leadId });
-    res.json({ ok: true, data });
+    await sendWelcomeEmail({ to: email, clientName: name, company, leadId });
+    results.welcomeEmail = 'ok';
+    logger.info(`📧 Email bienvenida → ${email}`, { leadId });
   } catch (err: any) {
-    logger.error('Error en proxy WhatsApp:', err);
-    res.status(500).json({ error: err.message });
+    results.welcomeEmail = `error: ${err.message}`;
+    logger.error(`Error email bienvenida: ${err.message}`);
   }
+
+  // ── Email de notificación al admin ──────────────────────────────────────────
+  try {
+    await notifyAdmin({ leadId, name, company: company || '—', email, templateAssigned: templateName });
+    results.adminEmail = 'ok';
+    logger.info(`📧 Email admin enviado`, { leadId });
+  } catch (err: any) {
+    results.adminEmail = `error: ${err.message}`;
+    logger.error(`Error email admin: ${err.message}`);
+  }
+
+  // ── WhatsApp via Evolution API ──────────────────────────────────────────────
+  try {
+    const evolutionUrl = process.env.EVOLUTION_API_URL;
+    const evolutionKey = process.env.EVOLUTION_API_KEY;
+    const groupId = process.env.WHATSAPP_GROUP_ID;
+    const instanceName = process.env.EVOLUTION_INSTANCE_NAME || 'tu-socia';
+
+    if (evolutionUrl && groupId) {
+      const r = await fetch(`${evolutionUrl}/message/sendText/${instanceName}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'apikey': evolutionKey || '' },
+        body: JSON.stringify({
+          number: groupId,
+          text: `🔔 *Nuevo lead:* ${name} (${company || '—'})\n📧 ${email}\n🤖 Template: ${templateName}\n🆔 ${leadId}`
+        })
+      });
+      const data = await r.json();
+      results.whatsapp = r.ok ? 'ok' : `error: ${JSON.stringify(data)}`;
+      logger.info(`📱 WhatsApp enviado`, { leadId });
+    } else {
+      results.whatsapp = 'skipped: no configurado';
+      logger.warn('WhatsApp no configurado (EVOLUTION_API_URL o WHATSAPP_GROUP_ID ausentes)');
+    }
+  } catch (err: any) {
+    results.whatsapp = `error: ${err.message}`;
+    logger.error(`Error WhatsApp: ${err.message}`);
+  }
+
+  logger.info('📬 Notificaciones completadas', { leadId, results });
+  res.json({ ok: true, results });
 });
 
 // ─── Iniciar servidor ────────────────────────────────
@@ -280,6 +255,7 @@ app.listen(PORT, () => {
 ║   💜 Tu Socia! Pipeline Server                  ║
 ║   Puerto: ${String(PORT).padEnd(39)}║
 ║   Webhook: POST /api/webhook/lead                ║
+║   Notify:  POST /api/notify-lead                 ║
 ║   Estado: ACTIVO                                 ║
 ╚══════════════════════════════════════════════════╝
   `);
