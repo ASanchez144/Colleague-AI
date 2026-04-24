@@ -100,7 +100,7 @@ export default function Landing() {
     if (!formData.name || !formData.email) { alert(t('alert.fillNameEmail')); return; }
     setIsSubmitting(true);
     try {
-      const WEBHOOK_URL = import.meta.env.VITE_WEBHOOK_URL || 'http://localhost:3001/api/webhook/lead';
+      const WEBHOOK_URL = import.meta.env.VITE_WEBHOOK_URL || 'https://ecmrfvskogcwhvkunmew.supabase.co/functions/v1/lead-webhook';
       const response = await fetch(WEBHOOK_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
