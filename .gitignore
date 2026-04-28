@@ -6,3 +6,33 @@ coverage/
 *.log
 .env*
 !.env.example
+
+# ── Secretos y credenciales ──────────────────────────
+Secrets.txt
+secrets
+*.pem
+*.key
+*.p8
+*.p12
+*.pfx
+
+# ── Claves SSH ───────────────────────────────────────
+id_rsa_artur/
+id_rsa*
+*.pub
+
+# ── Firebase / Google credentials ────────────────────
+firebase-applet-config.json
+firebase-service-account*.json
+*-credentials.json
+google-credentials*.json
+
+# ── Leads y datos de clientes (solo en servidor) ─────
+leads/
+clients/*/agent/.env
+clients/*/pipeline-job.json
+
+# ── QR codes (contienen estado de sesión WA) ─────────
+qr_whatsapp.png
+whatsapp-qr.png
+*.qr.png

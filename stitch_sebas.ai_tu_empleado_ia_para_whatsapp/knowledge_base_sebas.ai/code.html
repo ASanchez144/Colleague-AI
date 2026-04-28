@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Knowledge Base - Sebas.ai</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined';
+            font-weight: normal;
+            font-style: normal;
+            font-size: 24px;
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            -webkit-font-feature-settings: 'liga';
+            -webkit-font-smoothing: antialiased;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-tint": "#0053db",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "on-tertiary-fixed-variant": "#004c69",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "primary": "#004ac6",
+                        "inverse-primary": "#b4c5ff",
+                        "tertiary-container": "#00759f",
+                        "surface-bright": "#faf8ff",
+                        "on-secondary": "#ffffff",
+                        "on-background": "#191b23",
+                        "surface-container-high": "#e7e7f3",
+                        "on-primary-fixed": "#00174b",
+                        "tertiary-fixed": "#c4e7ff",
+                        "on-tertiary-container": "#e1f2ff",
+                        "on-secondary-fixed-variant": "#264191",
+                        "primary-fixed": "#dbe1ff",
+                        "tertiary-fixed-dim": "#7bd0ff",
+                        "surface-container-highest": "#e1e2ed",
+                        "surface-container-low": "#f3f3fe",
+                        "secondary-fixed": "#dce1ff",
+                        "secondary-fixed-dim": "#b6c4ff",
+                        "secondary": "#4059aa",
+                        "on-secondary-container": "#1d3989",
+                        "surface-dim": "#d9d9e5",
+                        "error-container": "#ffdad6",
+                        "surface-variant": "#e1e2ed",
+                        "secondary-container": "#8fa7fe",
+                        "surface-container": "#ededf9",
+                        "outline-variant": "#c3c6d7",
+                        "on-tertiary": "#ffffff",
+                        "on-surface": "#191b23",
+                        "error": "#ba1a1a",
+                        "tertiary": "#005b7c",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "inverse-on-surface": "#f0f0fb",
+                        "background": "#faf8ff",
+                        "surface": "#faf8ff",
+                        "on-error-container": "#93000a",
+                        "on-error": "#ffffff",
+                        "inverse-surface": "#2e3039",
+                        "on-secondary-fixed": "#00164e",
+                        "on-primary-container": "#eeefff",
+                        "outline": "#737686",
+                        "on-tertiary-fixed": "#001e2c",
+                        "primary-container": "#2563eb",
+                        "on-surface-variant": "#434655"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "sm": "0.5rem",
+                        "md": "1rem",
+                        "margin": "2rem",
+                        "xl": "2rem",
+                        "unit": "4px",
+                        "lg": "1.5rem",
+                        "gutter": "1.5rem",
+                        "xs": "0.25rem"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "label-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "h2": ["Inter"],
+                        "body-md": ["Inter"],
+                        "h1": ["Inter"],
+                        "h3": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "body-sm": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "label-md": ["14px", {"lineHeight": "1", "fontWeight": "500"}],
+                        "label-sm": ["12px", {"lineHeight": "1", "fontWeight": "600"}],
+                        "h2": ["30px", {"lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "h1": ["36px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "h3": ["24px", {"lineHeight": "1.4", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased min-h-screen flex">
+<!-- SideNavBar Component -->
+<nav class="bg-slate-50 dark:bg-slate-950 font-inter text-[13px] font-medium h-screen w-64 border-r border-r border-slate-200 dark:border-slate-800 flat no shadows fixed left-0 top-0 bottom-0 flex flex-col w-64 p-4 gap-2 z-40">
+<!-- Header -->
+<div class="flex items-center gap-3 px-2 py-4 mb-2">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center overflow-hidden shrink-0">
+<img alt="Local Business Logo" class="w-full h-full object-cover" data-alt="Minimalist abstract geometric logo mark in blue and white representing a modern technology company" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAi2ExXpJRp_I0CxW58hmb9m5c_GNDCx_Hk8wBDAMHLSq0sJgnqLC9IkUGy-Wi1-LzE3cLNpCjTP8eSDiOOqMpjJ97ZVuv5Qorjo4uS5raOoRgZLoiVIqa8D7j9957c_4hD_SDyFRkTfXm3hOoEwoK5rCZT9LtQFxnxQRVBO5rM_5DInAED35FpIKfXzakXXB3IXb4ocdD0kE7aZvRhMvK91lbdytLnVO5zEzTOKi0XBgk0oi8JtbEJgfB4BXquFa9j-0bMiaAunx8"/>
+</div>
+<div class="flex flex-col">
+<span class="text-lg font-black text-slate-900 dark:text-white leading-tight">BizAssist AI</span>
+<span class="text-slate-500 text-[11px] leading-tight mt-0.5">Local Business Partner</span>
+</div>
+</div>
+<!-- Main Navigation -->
+<div class="flex-1 flex flex-col gap-1 overflow-y-auto">
+<!-- Dashboard -->
+<a class="flex items-center gap-3 px-3 py-2 rounded-md text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="grid_view">grid_view</span>
+<span>Dashboard</span>
+</a>
+<!-- Knowledge Base (Active) -->
+<a class="flex items-center gap-3 px-3 py-2 rounded-md bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-sm border border-slate-200 dark:border-slate-800 transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="database" style="font-variation-settings: 'FILL' 1;">database</span>
+<span>Knowledge Base</span>
+</a>
+<!-- Conversations -->
+<a class="flex items-center gap-3 px-3 py-2 rounded-md text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="chat_bubble">chat_bubble</span>
+<span>Conversations</span>
+</a>
+<!-- Analytics -->
+<a class="flex items-center gap-3 px-3 py-2 rounded-md text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="bar_chart">bar_chart</span>
+<span>Analytics</span>
+</a>
+<!-- Settings -->
+<a class="flex items-center gap-3 px-3 py-2 rounded-md text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="settings">settings</span>
+<span>Settings</span>
+</a>
+</div>
+<!-- CTA Button -->
+<div class="mt-auto pt-4 pb-2">
+<button class="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-md font-medium transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                Add New Entry
+            </button>
+</div>
+<!-- Footer Navigation -->
+<div class="flex flex-col gap-1 pt-2 border-t border-slate-200 dark:border-slate-800">
+<a class="flex items-center gap-3 px-3 py-2 rounded-md text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="contact_support">contact_support</span>
+<span>Support</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-md text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="logout">logout</span>
+<span>Logout</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="ml-64 flex-1 flex flex-col min-h-screen relative overflow-hidden">
+<!-- Decorative Background Element -->
+<div class="absolute top-0 left-0 right-0 h-64 bg-gradient-to-b from-surface-container-low to-transparent -z-10 pointer-events-none"></div>
+<div class="p-margin max-w-7xl mx-auto w-full flex-1 flex flex-col gap-lg">
+<!-- Page Header -->
+<header class="flex flex-col sm:flex-row sm:items-center justify-between gap-md">
+<div>
+<h1 class="font-h1 text-h1 text-on-background">Knowledge Base</h1>
+<p class="font-body-md text-body-md text-on-surface-variant mt-xs">Manage the information Sebas uses to answer customer questions.</p>
+</div>
+<button class="flex items-center gap-xs bg-primary text-on-primary font-label-md text-label-md px-md py-sm rounded-lg shadow-sm border-t border-white/20 hover:bg-on-primary-fixed-variant transition-colors whitespace-nowrap self-start sm:self-auto">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                    Add New Entry
+                </button>
+</header>
+<!-- Filters & Search Toolbar -->
+<section class="flex flex-col lg:flex-row gap-md justify-between items-start lg:items-center bg-surface p-sm rounded-xl border border-outline-variant shadow-sm z-10 relative">
+<!-- Category Tabs -->
+<div class="flex items-center gap-sm overflow-x-auto w-full lg:w-auto pb-2 lg:pb-0 scrollbar-hide">
+<button class="px-md py-sm rounded-lg bg-secondary-container text-on-secondary-container font-label-sm text-label-sm whitespace-nowrap">All</button>
+<button class="px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-variant hover:text-on-surface font-label-sm text-label-sm whitespace-nowrap transition-colors">FAQs</button>
+<button class="px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-variant hover:text-on-surface font-label-sm text-label-sm whitespace-nowrap transition-colors">Services</button>
+<button class="px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-variant hover:text-on-surface font-label-sm text-label-sm whitespace-nowrap transition-colors">Policies</button>
+<button class="px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-variant hover:text-on-surface font-label-sm text-label-sm whitespace-nowrap transition-colors">Others</button>
+</div>
+<!-- Search Input -->
+<div class="relative w-full lg:w-72 shrink-0">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-outline text-[20px] pointer-events-none">search</span>
+<input class="w-full bg-surface-container-lowest border border-outline-variant text-on-surface font-body-sm text-body-sm rounded-lg pl-[36px] pr-sm py-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-outline" placeholder="Search knowledge base..." type="text"/>
+</div>
+</section>
+<!-- Knowledge Items Grid (Bento Style) -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-gutter">
+<!-- Item Card 1 -->
+<article class="bg-surface border border-outline-variant rounded-xl p-lg flex flex-col gap-md hover:shadow-md transition-shadow group relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-primary rounded-l-xl"></div>
+<div class="flex justify-between items-start gap-sm">
+<div class="flex flex-wrap gap-xs">
+<span class="inline-flex items-center px-2 py-1 rounded-full bg-surface-container-high text-on-surface font-label-sm text-[10px] uppercase tracking-wider">FAQ</span>
+<span class="inline-flex items-center px-2 py-1 rounded-full bg-secondary-container/30 text-on-secondary-container font-label-sm text-[10px] uppercase tracking-wider flex gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                                Active
+                            </span>
+</div>
+<button class="text-outline hover:text-on-surface transition-colors p-1 rounded-md hover:bg-surface-variant -mt-1 -mr-1">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+<div>
+<h3 class="font-h3 text-[18px] text-on-background mb-1 group-hover:text-primary transition-colors line-clamp-2">DJI Mini 4 Pro Recommendations</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">Standard recommendations for new users purchasing the DJI Mini 4 Pro, including memory card specs and ND filters.</p>
+</div>
+<div class="mt-auto pt-md border-t border-outline-variant/30 flex items-center justify-between">
+<span class="font-label-sm text-[11px] text-outline flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">update</span>
+                            Updated Oct 24, 2023
+                        </span>
+<div class="flex -space-x-2">
+<img alt="Avatar" class="w-6 h-6 rounded-full border border-surface" data-alt="Headshot of a smiling man with short brown hair wearing a dark blue shirt" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCVN5eJ9Mjfr7km-KFp91BtPbC3_xvyPJATNJukJSVWihBSYXEDwQL5gjm4_A_dVEREOdWbXUMKSfBtbAJYMUWzUrTv5_tNyX3BQ7_qE2uBnmWbN_GSKwN7swqhYBMjT03BJNkL9i7IKXf2YMyIiym093wGCojq1rbLa5ZyMVNF7ezO_7gFSWrokthkStF5CMVioRk1xtrdomXg097JP-pkAbFmHo0cxZbzyG4_LvwzG11zcLXO7zLCuFGwPpIXkPeMlPj3QjlSsQU"/>
+</div>
+</div>
+</article>
+<!-- Item Card 2 -->
+<article class="bg-surface border border-outline-variant rounded-xl p-lg flex flex-col gap-md hover:shadow-md transition-shadow group relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-tertiary rounded-l-xl"></div>
+<div class="flex justify-between items-start gap-sm">
+<div class="flex flex-wrap gap-xs">
+<span class="inline-flex items-center px-2 py-1 rounded-full bg-surface-container-high text-on-surface font-label-sm text-[10px] uppercase tracking-wider">Policy</span>
+<span class="inline-flex items-center px-2 py-1 rounded-full bg-secondary-container/30 text-on-secondary-container font-label-sm text-[10px] uppercase tracking-wider flex gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                                Active
+                            </span>
+</div>
+<button class="text-outline hover:text-on-surface transition-colors p-1 rounded-md hover:bg-surface-variant -mt-1 -mr-1">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+<div>
+<h3 class="font-h3 text-[18px] text-on-background mb-1 group-hover:text-primary transition-colors line-clamp-2">Return &amp; Exchange Window</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">Official 30-day return policy guidelines for electronics and drones, including restocking fee conditions.</p>
+</div>
+<div class="mt-auto pt-md border-t border-outline-variant/30 flex items-center justify-between">
+<span class="font-label-sm text-[11px] text-outline flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">update</span>
+                            Updated Sep 12, 2023
+                        </span>
+<div class="flex -space-x-2">
+<img alt="Avatar" class="w-6 h-6 rounded-full border border-surface" data-alt="Headshot of a smiling woman with medium length blonde hair wearing a white blouse" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbFQmiX4Bb1J_B0a2_EgQ3it-MmtjSd2dyBykwTn_xh4yPfO9TSk5KUamKPiDU8Vud8uvxKX8ZtYK9ckod_Ceh2SdWtvg3UFPXecUW2C1T2huMdlz958Ayv3hoZDAfZI_MCKxAgqRyLUVYbMsHGbNGVwsRcdOGicFEvbac2ybrBMaGF9VkNYRSfeZ5EEeGkUIyz_yOM_PWK7O1DsQcSktBCCx0vQtxspbEdpzBSdOHtYz6d31Xbm3rOjOIWCRry0_AKs6SyWXQKd0"/>
+</div>
+</div>
+</article>
+<!-- Item Card 3 -->
+<article class="bg-surface border border-outline-variant rounded-xl p-lg flex flex-col gap-md hover:shadow-md transition-shadow group relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-outline rounded-l-xl opacity-50"></div>
+<div class="flex justify-between items-start gap-sm">
+<div class="flex flex-wrap gap-xs">
+<span class="inline-flex items-center px-2 py-1 rounded-full bg-surface-container-high text-on-surface font-label-sm text-[10px] uppercase tracking-wider">Service</span>
+<span class="inline-flex items-center px-2 py-1 rounded-full bg-surface-variant text-on-surface-variant font-label-sm text-[10px] uppercase tracking-wider flex gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-outline"></span>
+                                Inactive
+                            </span>
+</div>
+<button class="text-outline hover:text-on-surface transition-colors p-1 rounded-md hover:bg-surface-variant -mt-1 -mr-1">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+<div>
+<h3 class="font-h3 text-[18px] text-on-background mb-1 group-hover:text-primary transition-colors line-clamp-2">Holiday Shipping Cutoffs 2022</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">Archived shipping deadlines for guaranteed delivery before December 25th via FedEx and UPS.</p>
+</div>
+<div class="mt-auto pt-md border-t border-outline-variant/30 flex items-center justify-between">
+<span class="font-label-sm text-[11px] text-outline flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">update</span>
+                            Updated Dec 01, 2022
+                        </span>
+<div class="flex -space-x-2">
+<div class="w-6 h-6 rounded-full border border-surface bg-tertiary-container flex items-center justify-center text-on-tertiary-container text-[10px] font-bold">
+                                SY
+                             </div>
+</div>
+</div>
+</article>
+<!-- Item Card 4 -->
+<article class="bg-surface border border-outline-variant rounded-xl p-lg flex flex-col gap-md hover:shadow-md transition-shadow group relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-primary rounded-l-xl"></div>
+<div class="flex justify-between items-start gap-sm">
+<div class="flex flex-wrap gap-xs">
+<span class="inline-flex items-center px-2 py-1 rounded-full bg-surface-container-high text-on-surface font-label-sm text-[10px] uppercase tracking-wider">FAQ</span>
+<span class="inline-flex items-center px-2 py-1 rounded-full bg-secondary-container/30 text-on-secondary-container font-label-sm text-[10px] uppercase tracking-wider flex gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                                Active
+                            </span>
+</div>
+<button class="text-outline hover:text-on-surface transition-colors p-1 rounded-md hover:bg-surface-variant -mt-1 -mr-1">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+<div>
+<h3 class="font-h3 text-[18px] text-on-background mb-1 group-hover:text-primary transition-colors line-clamp-2">How to Reset Password</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">Step-by-step instructions for customers trying to reset their account passwords via email link.</p>
+</div>
+<div class="mt-auto pt-md border-t border-outline-variant/30 flex items-center justify-between">
+<span class="font-label-sm text-[11px] text-outline flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">update</span>
+                            Updated Oct 28, 2023
+                        </span>
+<div class="flex -space-x-2">
+<div class="w-6 h-6 rounded-full border border-surface bg-primary-container flex items-center justify-center text-on-primary-container text-[10px] font-bold">
+                                AI
+                             </div>
+</div>
+</div>
+</article>
+</div>
+</div>
+</main>
+</body></html>

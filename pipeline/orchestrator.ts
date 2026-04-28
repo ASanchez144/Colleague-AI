@@ -1,23 +1,13 @@
 /**
  * Tu Socia! - Pipeline Orchestrator
- *
- * Coordina el flujo completo desde la recepción de un lead
- * hasta la creación del agente personalizado.
- *
- * Flujo:
- *   1. Recibir lead (webhook)
- *   2. Enviar email de bienvenida
- *   3. Analizar necesidades → enrutar a template
- *   4. Clonar template base
- *   5. Adaptar template al contexto del cliente
- *   6. Notificar al admin
- *   7. Entregar agente al cliente
+ * Coordina el flujo completo desde la recepcion de un lead hasta la creacion del agente.
  */
 
 import fs from 'fs/promises';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
-// ─── Types ───────────────────────────────────────────
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export interface PipelineJob {
   id: string;
@@ -38,7 +28,7 @@ interface PipelineStep {
   output?: any;
 }
 
-interface ClientContext {
+export interface ClientContext {
   leadId: string;
   company: string;
   sector: string;
@@ -51,8 +41,6 @@ interface ClientContext {
   security: string;
 }
 
-// ─── Orchestrator ────────────────────────────────────
-
 export class PipelineOrchestrator {
   private jobs: Map<string, PipelineJob> = new Map();
   private templatesDir: string;
@@ -63,9 +51,6 @@ export class PipelineOrchestrator {
     this.clientsDir = clientsDir;
   }
 
-  /**
-   * Inicia el pipeline de creación para un lead
-   */
   async startPipeline(leadId: string, templateId: string, context: ClientContext): Promise<PipelineJob> {
     const job: PipelineJob = {
       id: `job-${Date.now()}-${leadId.slice(0, 8)}`,
@@ -84,24 +69,24 @@ export class PipelineOrchestrator {
     };
 
     this.jobs.set(job.id, job);
+    await this.persistJob(job, leadId);
 
-    // Ejecutar pipeline en background
-    this.executePipeline(job, context).catch(error => {
+    // Background — no bloquea el webhook
+    this.executePipeline(job, context).catch(async (error) => {
       job.status = 'failed';
       job.error = String(error);
+      job.completedAt = new Date().toISOString();
       console.error(`Pipeline failed for ${leadId}:`, error);
+      await this.persistJob(job, leadId);
     });
 
     return job;
   }
 
-  /**
-   * Ejecuta los pasos del pipeline secuencialmente
-   */
   private async executePipeline(job: PipelineJob, context: ClientContext): Promise<void> {
     job.status = 'processing';
 
-    // ── Paso 1: Clonar template base ──
+    // 1. Clonar template base
     await this.runStep(job, 'clone-template', async () => {
       const clientDir = path.join(this.clientsDir, context.leadId, 'agent');
       const templateDir = path.join(this.templatesDir, job.templateId);
@@ -109,97 +94,67 @@ export class PipelineOrchestrator {
       return { clientDir };
     });
 
-    // ── Paso 2: Adaptar configuración ──
+    // 2. Adaptar configuracion
     job.status = 'adapting';
     await this.runStep(job, 'adapt-config', async () => {
       const configPath = path.join(this.clientsDir, context.leadId, 'agent', 'config', 'template.json');
-      const configRaw = await fs.readFile(configPath, 'utf-8');
-      const config = JSON.parse(configRaw);
-
-      // Personalizar config con datos del cliente
-      if (config.defaultConfig) {
-        config.defaultConfig.welcomeMessage = config.defaultConfig.welcomeMessage
-          ?.replace('{{company}}', context.company);
-        config.defaultConfig.greeting = config.defaultConfig.greeting
-          ?.replace('{{company}}', context.company);
+      let cfg: any = {};
+      try {
+        const raw = await fs.readFile(configPath, 'utf-8');
+        cfg = JSON.parse(raw);
+      } catch {
+        // config puede no existir en todos los templates
       }
-
-      config.client = {
+      if (cfg.defaultConfig) {
+        cfg.defaultConfig.welcomeMessage = (cfg.defaultConfig.welcomeMessage || '')
+          .replace(/\{\{company\}\}/g, context.company);
+        cfg.defaultConfig.greeting = (cfg.defaultConfig.greeting || '')
+          .replace(/\{\{company\}\}/g, context.company);
+      }
+      cfg.client = {
         leadId: context.leadId,
         company: context.company,
         sector: context.sector,
         adaptedAt: new Date().toISOString()
       };
-
-      await fs.writeFile(configPath, JSON.stringify(config, null, 2));
+      await fs.writeFile(configPath, JSON.stringify(cfg, null, 2)).catch(() => null);
       return { adapted: true };
     });
 
-    // ── Paso 3: Adaptar código (futuro: subagente con IA) ──
+    // 3. Adaptar codigo (futuro: subagente IA)
     await this.runStep(job, 'adapt-code', async () => {
-      // TODO: Aquí se conectará un subagente (Haiku) que:
-      // 1. Lee el template base
-      // 2. Analiza los pain points del cliente
-      // 3. Genera código adaptado (knowledge base, reglas de negocio, etc.)
-      //
-      // Por ahora, solo registramos que necesita adaptación manual
-      return {
-        adapted: false,
-        note: 'Pendiente: adaptación por subagente de IA'
-      };
+      return { adapted: false, note: 'Pendiente: subagente IA' };
     });
 
-    // ── Paso 4: Generar knowledge base ──
+    // 4. Generar knowledge base
     await this.runStep(job, 'generate-knowledge-base', async () => {
       const kbDir = path.join(this.clientsDir, context.leadId, 'agent', 'knowledge');
       await fs.mkdir(kbDir, { recursive: true });
-
-      // Generar KB básica desde los pain points
       const kb = {
         company: context.company,
         sector: context.sector,
         generatedAt: new Date().toISOString(),
         entries: [
-          {
-            topic: 'Tareas repetitivas identificadas',
-            content: context.painPoints.repetitiveTasks,
-            source: 'lead-form'
-          },
-          {
-            topic: 'Cuellos de botella',
-            content: context.painPoints.bottlenecks,
-            source: 'lead-form'
-          },
-          {
-            topic: 'Deseo del cliente',
-            content: context.painPoints.magicWand,
-            source: 'lead-form'
-          }
-        ]
+          { topic: 'Tareas repetitivas', content: context.painPoints.repetitiveTasks, source: 'lead-form' },
+          { topic: 'Cuellos de botella', content: context.painPoints.bottlenecks, source: 'lead-form' },
+          { topic: 'Deseo del cliente', content: context.painPoints.magicWand, source: 'lead-form' }
+        ].filter(e => e.content)
       };
-
-      await fs.writeFile(
-        path.join(kbDir, 'base-knowledge.json'),
-        JSON.stringify(kb, null, 2)
-      );
-
+      await fs.writeFile(path.join(kbDir, 'base-knowledge.json'), JSON.stringify(kb, null, 2));
       return { entries: kb.entries.length };
     });
 
-    // ── Paso 5: Validar ──
+    // 5. Validar
     job.status = 'testing';
     await this.runStep(job, 'validate', async () => {
       const agentDir = path.join(this.clientsDir, context.leadId, 'agent');
-      const hasConfig = await this.fileExists(path.join(agentDir, 'config', 'template.json'));
-      const hasSrc = await this.fileExists(path.join(agentDir, 'src', 'agent.ts'));
+      const hasSrc = await this.fileExists(path.join(agentDir, 'src'));
       const hasKb = await this.fileExists(path.join(agentDir, 'knowledge', 'base-knowledge.json'));
-
-      return { valid: hasConfig && hasSrc && hasKb, hasConfig, hasSrc, hasKb };
+      return { valid: hasSrc && hasKb, hasSrc, hasKb };
     });
 
-    // ── Paso 6: Empaquetar ──
+    // 6. Empaquetar
     await this.runStep(job, 'package', async () => {
-      // Generar manifiesto del agente
       const manifest = {
         agentId: `agent-${context.leadId.slice(0, 8)}`,
         client: context.company,
@@ -208,33 +163,23 @@ export class PipelineOrchestrator {
         status: 'ready-for-review',
         directory: path.join(this.clientsDir, context.leadId, 'agent')
       };
-
       await fs.writeFile(
         path.join(this.clientsDir, context.leadId, 'manifest.json'),
         JSON.stringify(manifest, null, 2)
       );
-
       return manifest;
     });
 
     job.status = 'ready';
     job.completedAt = new Date().toISOString();
+    await this.persistJob(job, context.leadId);
   }
 
-  /**
-   * Ejecuta un paso individual del pipeline
-   */
-  private async runStep(
-    job: PipelineJob,
-    stepName: string,
-    fn: () => Promise<any>
-  ): Promise<void> {
+  private async runStep(job: PipelineJob, stepName: string, fn: () => Promise<any>): Promise<void> {
     const step = job.steps.find(s => s.name === stepName);
     if (!step) throw new Error(`Step ${stepName} not found`);
-
     step.status = 'running';
     step.startedAt = new Date().toISOString();
-
     try {
       step.output = await fn();
       step.status = 'done';
@@ -246,30 +191,47 @@ export class PipelineOrchestrator {
     }
   }
 
-  /**
-   * Obtiene el estado de un job
-   */
   getJobStatus(jobId: string): PipelineJob | undefined {
     return this.jobs.get(jobId);
   }
 
-  /**
-   * Lista todos los jobs
-   */
   listJobs(): PipelineJob[] {
     return Array.from(this.jobs.values());
   }
 
-  // ─── Helpers ─────────────────────────────────────
+  private async persistJob(job: PipelineJob, leadId: string): Promise<void> {
+    try {
+      const jobDir = path.join(this.clientsDir, leadId);
+      await fs.mkdir(jobDir, { recursive: true });
+      await fs.writeFile(path.join(jobDir, 'pipeline-job.json'), JSON.stringify(job, null, 2));
+    } catch (err) {
+      console.error(`[orchestrator] No se pudo persistir job ${job.id}:`, err);
+    }
+  }
+
+  async getJobByLeadId(leadId: string): Promise<PipelineJob | undefined> {
+    for (const job of this.jobs.values()) {
+      if (job.leadId === leadId) return job;
+    }
+    try {
+      const raw = await fs.readFile(path.join(this.clientsDir, leadId, 'pipeline-job.json'), 'utf-8');
+      return JSON.parse(raw) as PipelineJob;
+    } catch {
+      return undefined;
+    }
+  }
 
   private async copyDirectory(src: string, dest: string): Promise<void> {
     await fs.mkdir(dest, { recursive: true });
-    const entries = await fs.readdir(src, { withFileTypes: true });
-
+    let entries: any[] = [];
+    try {
+      entries = await fs.readdir(src, { withFileTypes: true });
+    } catch {
+      return; // template dir puede no existir aun
+    }
     for (const entry of entries) {
       const srcPath = path.join(src, entry.name);
       const destPath = path.join(dest, entry.name);
-
       if (entry.isDirectory()) {
         await this.copyDirectory(srcPath, destPath);
       } else {

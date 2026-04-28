@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sebas.ai - Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error": "#ffffff",
+                        "outline-variant": "#c3c6d7",
+                        "tertiary-fixed": "#c4e7ff",
+                        "surface-tint": "#0053db",
+                        "surface-bright": "#faf8ff",
+                        "on-primary-fixed": "#00174b",
+                        "on-tertiary-fixed": "#001e2c",
+                        "on-secondary-container": "#1d3989",
+                        "on-surface": "#191b23",
+                        "inverse-primary": "#b4c5ff",
+                        "surface-variant": "#e1e2ed",
+                        "secondary-container": "#8fa7fe",
+                        "tertiary-container": "#00759f",
+                        "surface-container-high": "#e7e7f3",
+                        "primary-container": "#2563eb",
+                        "on-error-container": "#93000a",
+                        "secondary-fixed-dim": "#b6c4ff",
+                        "primary-fixed": "#dbe1ff",
+                        "surface-dim": "#d9d9e5",
+                        "on-primary": "#ffffff",
+                        "on-primary-container": "#eeefff",
+                        "background": "#faf8ff",
+                        "surface-container-low": "#f3f3fe",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed": "#00164e",
+                        "on-secondary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed-variant": "#264191",
+                        "inverse-on-surface": "#f0f0fb",
+                        "error-container": "#ffdad6",
+                        "primary": "#004ac6",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "on-background": "#191b23",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "secondary-fixed": "#dce1ff",
+                        "outline": "#737686",
+                        "surface-container": "#ededf9",
+                        "inverse-surface": "#2e3039",
+                        "on-tertiary-fixed-variant": "#004c69",
+                        "surface": "#faf8ff",
+                        "secondary": "#4059aa",
+                        "error": "#ba1a1a",
+                        "on-tertiary-container": "#e1f2ff",
+                        "on-surface-variant": "#434655",
+                        "surface-container-highest": "#e1e2ed",
+                        "tertiary-fixed-dim": "#7bd0ff",
+                        "tertiary": "#005b7c"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "margin": "2rem",
+                        "md": "1rem",
+                        "gutter": "1.5rem",
+                        "sm": "0.5rem",
+                        "unit": "4px",
+                        "xs": "0.25rem",
+                        "xl": "2rem",
+                        "lg": "1.5rem"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "h2": ["Inter"],
+                        "h3": ["Inter"],
+                        "h1": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "label-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "h2": ["30px", { "lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "h3": ["24px", { "lineHeight": "1.4", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "h1": ["36px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "label-sm": ["12px", { "lineHeight": "1", "fontWeight": "600" }],
+                        "label-md": ["14px", { "lineHeight": "1", "fontWeight": "500" }],
+                        "body-sm": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-md text-body-md antialiased min-h-screen">
+<!-- SideNavBar -->
+<nav class="hidden md:flex w-64 h-screen border-r border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-['Inter'] antialiased text-sm tracking-tight fixed left-0 top-0 bottom-0 flex-col p-4 gap-2 z-50">
+<div class="mb-8 px-4 flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-primary-container text-on-primary-container flex items-center justify-center font-bold">
+                S
+            </div>
+<div>
+<div class="text-xl font-bold text-slate-900 dark:text-white tracking-tighter">Sebas.ai</div>
+<div class="text-xs text-slate-500">AI Business Partner</div>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-4 py-2 text-blue-600 dark:text-blue-400 bg-blue-50/50 dark:bg-blue-900/20 rounded-lg font-semibold active:scale-[0.98] transition-transform duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+                Dashboard
+            </a>
+<a class="flex items-center gap-3 px-4 py-2 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors duration-200 active:scale-[0.98] transition-transform duration-150 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="forum">forum</span>
+                Conversations
+            </a>
+<a class="flex items-center gap-3 px-4 py-2 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors duration-200 active:scale-[0.98] transition-transform duration-150 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="person_search">person_search</span>
+                Leads
+            </a>
+<a class="flex items-center gap-3 px-4 py-2 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors duration-200 active:scale-[0.98] transition-transform duration-150 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>
+                Appointments
+            </a>
+<a class="flex items-center gap-3 px-4 py-2 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors duration-200 active:scale-[0.98] transition-transform duration-150 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="auto_stories">auto_stories</span>
+                Knowledge Base
+            </a>
+<a class="flex items-center gap-3 px-4 py-2 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors duration-200 active:scale-[0.98] transition-transform duration-150 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+                Settings
+            </a>
+</div>
+</nav>
+<!-- TopNavBar -->
+<header class="fixed top-0 right-0 left-0 md:left-64 flex items-center justify-between px-8 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md w-full md:w-[calc(100%-16rem)] h-16 border-b border-slate-200 dark:border-slate-800 shadow-sm dark:shadow-none font-['Inter'] text-sm">
+<div class="flex items-center gap-4">
+<span class="md:hidden text-lg font-bold text-slate-900 dark:text-white">Sebas.ai</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-full p-2 transition-all focus:ring-2 focus:ring-blue-500 focus:outline-none">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-slate-200 overflow-hidden border border-slate-300">
+<img alt="Administrator Profile" class="w-full h-full object-cover" data-alt="close up portrait of a professional man in a white background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB57t5TEr3IWl1blYjhlvpvRI8NdiJFN1pp99_4CsBSR6Zjro4oySrCPUyIreK_LpJ2xrP5OWYBvt520rLi7eXJyxd6bbuWeB6tpNbT6o9mrJug-IX9dZFPKx7rWfp_WxQ4l8gnQwzPp_H76L_5C0yvdxMfPEAD5ZfXOe68vNeeo3jk3cmYncLA6z0byIdwYlPAs2gscgR8Lmxacc8jT1BtiDxrfDoyFF16N2ajNKDZwRKRwrf8x1CKrK0jqIWSUSDNh_spA2ae3jk"/>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="pt-16 md:pl-64 min-h-screen">
+<div class="p-gutter max-w-7xl mx-auto space-y-lg">
+<!-- Header -->
+<div class="flex flex-col gap-1">
+<h1 class="font-h1 text-h1 text-on-surface">Dashboard</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Welcome back, DroneX Store</p>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-lg">
+<!-- Main Column -->
+<div class="lg:col-span-8 space-y-lg">
+<!-- Hero Section: Agent Status Card -->
+<div class="bg-surface rounded-xl border border-surface-variant p-lg shadow-[0_2px_8px_-2px_rgba(0,0,0,0.04)] relative overflow-hidden">
+<div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary-container to-tertiary-container"></div>
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-md">
+<div>
+<h2 class="font-h3 text-h3 text-on-surface flex items-center gap-2">
+                                    Agent Status
+                                    <span class="relative flex h-3 w-3">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+<span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+</span>
+</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Your AI agent is currently active and handling conversations.</p>
+</div>
+<div class="flex items-center gap-3 w-full md:w-auto">
+<button class="flex-1 md:flex-none px-4 py-2 rounded-lg font-label-md text-label-md border border-outline-variant text-on-surface hover:bg-surface-container-low transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary shadow-sm">
+                                    Pause Agent
+                                </button>
+<button class="flex-1 md:flex-none px-4 py-2 rounded-lg font-label-md text-label-md bg-primary text-on-primary hover:bg-on-primary-fixed-variant transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary shadow-sm border-t border-white/20">
+                                    Activate Agent
+                                </button>
+</div>
+</div>
+</div>
+<!-- Stats Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+<div class="bg-surface rounded-xl border border-surface-variant p-md shadow-[0_2px_4px_-2px_rgba(0,0,0,0.02)] flex flex-col gap-2 hover:border-primary-container/30 transition-colors duration-200">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-lg" data-icon="chat">chat</span>
+<span class="font-label-md text-label-md">Total Messages (Today)</span>
+</div>
+<div class="font-h2 text-h2 text-on-surface">1,248</div>
+</div>
+<div class="bg-surface rounded-xl border border-surface-variant p-md shadow-[0_2px_4px_-2px_rgba(0,0,0,0.02)] flex flex-col gap-2 hover:border-primary-container/30 transition-colors duration-200">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-lg" data-icon="person_add">person_add</span>
+<span class="font-label-md text-label-md">New Leads</span>
+</div>
+<div class="font-h2 text-h2 text-on-surface">42</div>
+</div>
+<div class="bg-surface rounded-xl border border-surface-variant p-md shadow-[0_2px_4px_-2px_rgba(0,0,0,0.02)] flex flex-col gap-2 hover:border-primary-container/30 transition-colors duration-200">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-lg" data-icon="event_available">event_available</span>
+<span class="font-label-md text-label-md">Scheduled Appointments</span>
+</div>
+<div class="font-h2 text-h2 text-on-surface">8</div>
+</div>
+<div class="bg-surface rounded-xl border border-surface-variant p-md shadow-[0_2px_4px_-2px_rgba(0,0,0,0.02)] flex flex-col gap-2 hover:border-primary-container/30 transition-colors duration-200">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-lg" data-icon="psychology">psychology</span>
+<span class="font-label-md text-label-md">AI Confidence Score</span>
+</div>
+<div class="font-h2 text-h2 text-on-surface text-primary">94%</div>
+</div>
+</div>
+<!-- Recent Conversations Table -->
+<div class="bg-surface rounded-xl border border-surface-variant shadow-[0_2px_8px_-2px_rgba(0,0,0,0.04)] overflow-hidden">
+<div class="p-md border-b border-surface-variant flex justify-between items-center">
+<h3 class="font-h3 text-h3 text-on-surface text-lg">Recent Conversations</h3>
+<button class="text-primary hover:text-on-primary-fixed-variant font-label-md text-label-md">View All</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-surface-variant bg-surface-container-lowest">
+<th class="p-4 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Customer</th>
+<th class="p-4 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Channel</th>
+<th class="p-4 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Detected Intent</th>
+<th class="p-4 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Status</th>
+<th class="p-4 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Last Activity</th>
+</tr>
+</thead>
+<tbody class="font-body-sm text-body-sm text-on-surface divide-y divide-surface-variant">
+<tr class="hover:bg-surface-container-low transition-colors duration-150 group cursor-pointer">
+<td class="p-4 font-medium">Alex Rivera</td>
+<td class="p-4 text-center">
+<span class="material-symbols-outlined text-[#25D366] text-xl" data-icon="chat">chat</span>
+</td>
+<td class="p-4">Product Inquiry</td>
+<td class="p-4">
+<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-primary-fixed text-on-primary-fixed">
+                                                AI Handled
+                                            </span>
+</td>
+<td class="p-4 text-on-surface-variant">2 mins ago</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors duration-150 group cursor-pointer">
+<td class="p-4 font-medium">Sarah Jenkins</td>
+<td class="p-4 text-center">
+<span class="material-symbols-outlined text-[#25D366] text-xl" data-icon="chat">chat</span>
+</td>
+<td class="p-4">Pricing Question</td>
+<td class="p-4">
+<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-error-container text-on-error-container">
+                                                Needs Human
+                                            </span>
+</td>
+<td class="p-4 text-on-surface-variant">15 mins ago</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors duration-150 group cursor-pointer">
+<td class="p-4 font-medium">Michael Chang</td>
+<td class="p-4 text-center">
+<span class="material-symbols-outlined text-[#25D366] text-xl" data-icon="chat">chat</span>
+</td>
+<td class="p-4">Book Appointment</td>
+<td class="p-4">
+<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-primary-fixed text-on-primary-fixed">
+                                                AI Handled
+                                            </span>
+</td>
+<td class="p-4 text-on-surface-variant">1 hour ago</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- Right Sidebar / Quick Actions -->
+<div class="lg:col-span-4 space-y-md">
+<div class="bg-surface-container-low rounded-xl border border-surface-variant p-md">
+<h3 class="font-h3 text-h3 text-on-surface text-lg mb-4">Quick Actions</h3>
+<div class="flex flex-col gap-2">
+<button class="flex items-center justify-between p-3 rounded-lg border border-outline-variant bg-surface hover:border-primary-container hover:bg-surface-bright transition-all duration-200 group text-left shadow-sm">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary-fixed/50 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface group-hover:text-primary transition-colors">Add FAQ</span>
+</div>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors" data-icon="chevron_right">chevron_right</span>
+</button>
+<button class="flex items-center justify-between p-3 rounded-lg border border-outline-variant bg-surface hover:border-primary-container hover:bg-surface-bright transition-all duration-200 group text-left shadow-sm">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-secondary-fixed/50 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-sm" data-icon="group">group</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface group-hover:text-secondary transition-colors">Manage Leads</span>
+</div>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-secondary transition-colors" data-icon="chevron_right">chevron_right</span>
+</button>
+<button class="flex items-center justify-between p-3 rounded-lg border border-outline-variant bg-surface hover:border-primary-container hover:bg-surface-bright transition-all duration-200 group text-left shadow-sm">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-tertiary-fixed/50 flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-sm" data-icon="settings_suggest">settings_suggest</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface group-hover:text-tertiary transition-colors">Agent Settings</span>
+</div>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-tertiary transition-colors" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

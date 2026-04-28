@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sebas.ai - Global Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "secondary": "#4059aa",
+                      "error": "#ba1a1a",
+                      "on-tertiary-fixed-variant": "#004c69",
+                      "surface": "#faf8ff",
+                      "on-surface-variant": "#434655",
+                      "surface-container-highest": "#e1e2ed",
+                      "on-tertiary-container": "#e1f2ff",
+                      "tertiary-fixed-dim": "#7bd0ff",
+                      "tertiary": "#005b7c",
+                      "primary-fixed-dim": "#b4c5ff",
+                      "on-background": "#191b23",
+                      "secondary-fixed": "#dce1ff",
+                      "outline": "#737686",
+                      "inverse-surface": "#2e3039",
+                      "surface-container": "#ededf9",
+                      "secondary-fixed-dim": "#b6c4ff",
+                      "on-error-container": "#93000a",
+                      "on-primary-container": "#eeefff",
+                      "background": "#faf8ff",
+                      "surface-container-low": "#f3f3fe",
+                      "on-tertiary": "#ffffff",
+                      "primary-fixed": "#dbe1ff",
+                      "surface-dim": "#d9d9e5",
+                      "on-primary": "#ffffff",
+                      "on-secondary": "#ffffff",
+                      "surface-container-lowest": "#ffffff",
+                      "on-secondary-fixed-variant": "#264191",
+                      "inverse-on-surface": "#f0f0fb",
+                      "error-container": "#ffdad6",
+                      "on-secondary-fixed": "#00164e",
+                      "on-primary-fixed-variant": "#003ea8",
+                      "primary": "#004ac6",
+                      "on-error": "#ffffff",
+                      "on-primary-fixed": "#00174b",
+                      "on-tertiary-fixed": "#001e2c",
+                      "on-secondary-container": "#1d3989",
+                      "outline-variant": "#c3c6d7",
+                      "tertiary-fixed": "#c4e7ff",
+                      "surface-tint": "#0053db",
+                      "surface-bright": "#faf8ff",
+                      "on-surface": "#191b23",
+                      "inverse-primary": "#b4c5ff",
+                      "surface-container-high": "#e7e7f3",
+                      "primary-container": "#2563eb",
+                      "surface-variant": "#e1e2ed",
+                      "secondary-container": "#8fa7fe",
+                      "tertiary-container": "#00759f"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "sm": "0.5rem",
+                      "unit": "4px",
+                      "xs": "0.25rem",
+                      "xl": "2rem",
+                      "lg": "1.5rem",
+                      "margin": "2rem",
+                      "md": "1rem",
+                      "gutter": "1.5rem"
+              },
+              "fontFamily": {
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "h2": [
+                              "Inter"
+                      ],
+                      "h3": [
+                              "Inter"
+                      ],
+                      "h1": [
+                              "Inter"
+                      ],
+                      "label-md": [
+                              "Inter"
+                      ],
+                      "body-sm": [
+                              "Inter"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "label-sm": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "h2": [
+                              "30px",
+                              {
+                                      "lineHeight": "1.3",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "h3": [
+                              "24px",
+                              {
+                                      "lineHeight": "1.4",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "h1": [
+                              "36px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "label-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "1",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "body-sm": [
+                              "14px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "label-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "1",
+                                      "fontWeight": "600"
+                              }
+                      }
+              }
+            },
+          }
+    </script>
+<style>
+        body { background-color: theme('colors.background'); color: theme('colors.on-background'); }
+    </style>
+</head>
+<body class="flex min-h-screen bg-background">
+<!-- SideNavBar -->
+<aside class="w-64 h-screen border-r border-slate-200 fixed left-0 top-0 bg-slate-50 flex flex-col p-4 gap-2 font-inter text-sm font-medium z-50">
+<div class="mb-8 px-3">
+<h1 class="text-xl font-bold tracking-tight text-slate-900">SaaS Admin</h1>
+<p class="text-xs text-slate-500 font-normal">Multi-tenant Platform</p>
+</div>
+<nav class="flex-1 flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded-md bg-blue-50 text-blue-700 font-semibold transition-transform active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+                Global Dashboard
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-md text-slate-600 hover:bg-slate-100 transition-colors duration-200 active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined">corporate_fare</span>
+                Organizations
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-md text-slate-600 hover:bg-slate-100 transition-colors duration-200 active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined">payments</span>
+                Billing
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-md text-slate-600 hover:bg-slate-100 transition-colors duration-200 active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined">description</span>
+                Templates
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-md text-slate-600 hover:bg-slate-100 transition-colors duration-200 active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined">history</span>
+                Logs
+            </a>
+</nav>
+<div class="mt-auto pt-4 border-t border-slate-200">
+<div class="flex items-center gap-3 px-3 py-2">
+<img alt="Admin Avatar" class="w-8 h-8 rounded-full" data-alt="Professional headshot of a man with short brown hair wearing a blue shirt against a blurred background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBlUDDqJRs6lSyyZQKa3iO-Wm76_WvywmwI8sWOJfos2oD3iJ0JkfpZaRG5iT00Fk1fwDFYzl74dxqEzkXBLbi2wKVezaIX5jumyPplZPtQWH5WF250zWwUm4833ATGNqVTRuZuoL3S3mvJWpQL_Gv2q8bzeGfgXxnzvh_3TSUZSCfcjLdTo1kl_Eoyz79LYrD01gWGvc7E3fhTlK_1_X7rVPAMZUph4E_Ss78NFEoEazX-Ry7wIwdVo1rUWUVOYUfZ03Kxz9FHV8Q"/>
+<div class="flex flex-col">
+<span class="text-slate-900 font-semibold text-xs">Admin User</span>
+<span class="text-slate-500 text-[10px]">admin@sebas.ai</span>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<div class="flex-1 ml-64 flex flex-col min-h-screen">
+<!-- TopAppBar -->
+<header class="sticky top-0 z-40 w-full border-b border-slate-200 bg-white/80 backdrop-blur-md shadow-sm font-inter text-sm flex items-center justify-between px-6 py-3 h-16">
+<div class="flex items-center gap-4 flex-1">
+<div class="hidden md:block text-lg font-semibold text-slate-900 mr-4">Admin Console</div>
+<div class="relative w-full max-w-md">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" placeholder="Search organizations, logs, or settings..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-slate-500 hover:text-blue-600 transition-colors duration-200 relative cursor-pointer active:scale-[0.98]">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
+</button>
+<button class="text-slate-500 hover:text-blue-600 transition-colors duration-200 cursor-pointer active:scale-[0.98]">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="h-6 w-px bg-slate-200 mx-1"></div>
+<button class="flex items-center gap-2 text-slate-700 hover:text-blue-600 transition-colors duration-200 font-medium cursor-pointer active:scale-[0.98]">
+<img alt="Admin Profile Image" class="w-8 h-8 rounded-full border border-slate-200" data-alt="Professional headshot of a man with short brown hair wearing a blue shirt against a blurred background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCkPvBZaNtgDRlQDV7Iq-PXgHe1XbRtU-z7_UH-TCWEYUrESeN0dl4GbDACv1r5YLaK7dDHDnbFvo0xkCrhsa_qrg1NcWniPNaoYaKf5WZcWIoACLRkkJ23_hdqzu94YgLAC5VRT2ZOawI9iUE2DPM-aDFH2vVf3eJrSo487fnZ3l4S_XDEJeQOCE9PyFkleniepoVcEFK2hbj0SXr0gWi5vBseLG8ona8ZrXASnx1yLZ4YPyJlojqKF9wvOQn7WTjHd8-1PCoBm-0"/>
+                    Profile
+                </button>
+</div>
+</header>
+<!-- Page Canvas -->
+<main class="flex-1 p-8 bg-surface-container-low overflow-y-auto">
+<div class="flex justify-between items-end mb-8">
+<div>
+<h2 class="font-h2 text-h2 text-on-surface mb-1">Global Dashboard</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Overview of platform health and key metrics.</p>
+</div>
+<div class="flex gap-3">
+<button class="px-4 py-2 bg-surface border border-outline-variant rounded-lg text-on-surface font-label-md text-label-md hover:bg-surface-variant transition-colors shadow-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">history</span>
+                        Review Agent Logs
+                    </button>
+<button class="px-4 py-2 bg-primary text-on-primary rounded-lg font-label-md text-label-md hover:bg-primary-container hover:text-on-primary-container transition-colors shadow-sm shadow-primary/20 flex items-center gap-2 border-t border-white/20">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                        Create New Organization
+                    </button>
+</div>
+</div>
+<!-- Stats Row -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+<!-- Stat 1 -->
+<div class="bg-surface rounded-xl border border-surface-variant p-6 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] flex flex-col justify-between">
+<div class="flex justify-between items-start mb-4">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Total Organizations</span>
+<div class="p-2 bg-primary/10 rounded-lg text-primary">
+<span class="material-symbols-outlined text-[20px]">corporate_fare</span>
+</div>
+</div>
+<div>
+<div class="font-h2 text-h2 text-on-surface">128</div>
+<div class="flex items-center gap-1 mt-1 text-emerald-600 font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[16px]">trending_up</span>
+<span>+12% this month</span>
+</div>
+</div>
+</div>
+<!-- Stat 2 -->
+<div class="bg-surface rounded-xl border border-surface-variant p-6 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] flex flex-col justify-between">
+<div class="flex justify-between items-start mb-4">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Active Agents</span>
+<div class="p-2 bg-secondary/10 rounded-lg text-secondary">
+<span class="material-symbols-outlined text-[20px]">smart_toy</span>
+</div>
+</div>
+<div>
+<div class="font-h2 text-h2 text-on-surface">112</div>
+<div class="flex items-center gap-1 mt-1 text-emerald-600 font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[16px]">trending_up</span>
+<span>+5% this week</span>
+</div>
+</div>
+</div>
+<!-- Stat 3 -->
+<div class="bg-surface rounded-xl border border-surface-variant p-6 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] flex flex-col justify-between">
+<div class="flex justify-between items-start mb-4">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Monthly Revenue</span>
+<div class="p-2 bg-emerald-500/10 rounded-lg text-emerald-600">
+<span class="material-symbols-outlined text-[20px]">payments</span>
+</div>
+</div>
+<div>
+<div class="font-h2 text-h2 text-on-surface">$12,450</div>
+<div class="flex items-center gap-1 mt-1 text-emerald-600 font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[16px]">trending_up</span>
+<span>+18% from last month</span>
+</div>
+</div>
+</div>
+<!-- Stat 4 -->
+<div class="bg-surface rounded-xl border border-surface-variant p-6 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] flex flex-col justify-between relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-br from-tertiary/5 to-transparent pointer-events-none"></div>
+<div class="flex justify-between items-start mb-4 relative z-10">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">AI Cost</span>
+<div class="p-2 bg-tertiary/10 rounded-lg text-tertiary">
+<span class="material-symbols-outlined text-[20px]">memory</span>
+</div>
+</div>
+<div class="relative z-10">
+<div class="font-h2 text-h2 text-on-surface">$1,205</div>
+<div class="flex items-center gap-1 mt-1 text-error font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[16px]">trending_up</span>
+<span>+4% vs budget</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Dashboard Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<!-- Main Chart -->
+<div class="lg:col-span-2 bg-surface rounded-xl border border-surface-variant shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] p-6">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-h3 text-h3 text-on-surface">Active Conversations</h3>
+<select class="bg-surface border border-outline-variant rounded-md text-sm py-1 px-3 text-on-surface-variant focus:ring-primary focus:border-primary">
+<option>Last 30 Days</option>
+<option>Last 7 Days</option>
+<option>This Year</option>
+</select>
+</div>
+<div class="h-64 w-full bg-slate-50 rounded-lg border border-slate-100 flex items-center justify-center relative overflow-hidden">
+<!-- Simulated Line Chart with CSS Gradients/Shapes -->
+<div class="absolute inset-0 p-4 flex flex-col justify-between text-xs text-slate-400">
+<div class="border-b border-slate-200 border-dashed w-full h-0 relative"><span class="absolute -top-2 -left-6">10k</span></div>
+<div class="border-b border-slate-200 border-dashed w-full h-0 relative"><span class="absolute -top-2 -left-6">7.5k</span></div>
+<div class="border-b border-slate-200 border-dashed w-full h-0 relative"><span class="absolute -top-2 -left-6">5k</span></div>
+<div class="border-b border-slate-200 border-dashed w-full h-0 relative"><span class="absolute -top-2 -left-6">2.5k</span></div>
+<div class="w-full h-0 relative"><span class="absolute -top-2 -left-6">0</span></div>
+</div>
+<div class="absolute inset-x-8 bottom-8 top-8">
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 100 100">
+<defs>
+<lineargradient id="chartGradient" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="var(--tw-colors-primary)" stop-opacity="0.2"></stop>
+<stop offset="100%" stop-color="var(--tw-colors-primary)" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+<path d="M0,80 Q10,60 20,70 T40,50 T60,30 T80,40 T100,10 L100,100 L0,100 Z" fill="url(#chartGradient)"></path>
+<path d="M0,80 Q10,60 20,70 T40,50 T60,30 T80,40 T100,10" fill="none" stroke="var(--tw-colors-primary)" stroke-width="2" vector-effect="non-scaling-stroke"></path>
+<!-- Data Points -->
+<circle cx="20" cy="70" fill="white" r="3" stroke="var(--tw-colors-primary)" stroke-width="2"></circle>
+<circle cx="40" cy="50" fill="white" r="3" stroke="var(--tw-colors-primary)" stroke-width="2"></circle>
+<circle cx="60" cy="30" fill="white" r="3" stroke="var(--tw-colors-primary)" stroke-width="2"></circle>
+<circle cx="80" cy="40" fill="white" r="3" stroke="var(--tw-colors-primary)" stroke-width="2"></circle>
+<circle cx="100" cy="10" fill="white" r="3" stroke="var(--tw-colors-primary)" stroke-width="2"></circle>
+</svg>
+</div>
+</div>
+</div>
+<!-- Status Overview (Gauges) -->
+<div class="bg-surface rounded-xl border border-surface-variant shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] p-6 flex flex-col gap-6">
+<h3 class="font-h3 text-h3 text-on-surface mb-2">Status Overview</h3>
+<!-- Gauge 1 -->
+<div class="flex items-center gap-6 p-4 rounded-lg bg-surface-container-low border border-surface-variant">
+<div class="relative w-16 h-16 flex-shrink-0">
+<svg class="w-full h-full transform -rotate-90" viewbox="0 0 36 36">
+<path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#e2e8f0" stroke-width="3"></path>
+<path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#10b981" stroke-dasharray="98, 100" stroke-width="3"></path>
+</svg>
+<div class="absolute inset-0 flex items-center justify-center font-label-md text-label-md text-emerald-600 font-semibold">98%</div>
+</div>
+<div>
+<div class="font-label-md text-label-md text-on-surface mb-1">Agent Health</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">System uptime and responsiveness across all deployed agents.</div>
+</div>
+</div>
+<!-- Gauge 2 -->
+<div class="flex items-center gap-6 p-4 rounded-lg bg-surface-container-low border border-surface-variant">
+<div class="relative w-16 h-16 flex-shrink-0">
+<svg class="w-full h-full transform -rotate-90" viewbox="0 0 36 36">
+<path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#e2e8f0" stroke-width="3"></path>
+<path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="var(--tw-colors-primary)" stroke-dasharray="96, 100" stroke-width="3"></path>
+</svg>
+<div class="absolute inset-0 flex items-center justify-center font-label-md text-label-md text-primary font-semibold">4.8</div>
+</div>
+<div>
+<div class="font-label-md text-label-md text-on-surface mb-1">Customer Satisfaction</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">Average feedback score from end-user interactions.</div>
+</div>
+</div>
+</div>
+<!-- Recent Events Table -->
+<div class="lg:col-span-3 bg-surface rounded-xl border border-surface-variant shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] overflow-hidden">
+<div class="p-6 border-b border-surface-variant flex justify-between items-center bg-surface-bright">
+<h3 class="font-h3 text-h3 text-on-surface">Recent System Events</h3>
+<button class="text-primary hover:text-primary-container font-label-sm text-label-sm transition-colors">View All Logs</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-surface-variant font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">
+<th class="p-4 font-medium">Timestamp</th>
+<th class="p-4 font-medium">Event Type</th>
+<th class="p-4 font-medium">Description</th>
+<th class="p-4 font-medium">Status</th>
+</tr>
+</thead>
+<tbody class="font-body-sm text-body-sm divide-y divide-surface-variant text-on-surface">
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="p-4 text-on-surface-variant">10:42 AM</td>
+<td class="p-4 font-medium flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-primary">add_circle</span>
+                                        Onboarding
+                                    </td>
+<td class="p-4">New Organization Joined: DroneX</td>
+<td class="p-4">
+<span class="inline-flex items-center px-2 py-1 rounded-full bg-emerald-100 text-emerald-800 font-label-sm text-[10px] uppercase">Success</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors bg-error-container/20">
+<td class="p-4 text-on-surface-variant">09:15 AM</td>
+<td class="p-4 font-medium flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-error">warning</span>
+                                        System
+                                    </td>
+<td class="p-4">Agent Error: GymPro API Timeout</td>
+<td class="p-4">
+<span class="inline-flex items-center px-2 py-1 rounded-full bg-error/10 text-error font-label-sm text-[10px] uppercase">Failed</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="p-4 text-on-surface-variant">08:30 AM</td>
+<td class="p-4 font-medium flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-secondary">payments</span>
+                                        Finance
+                                    </td>
+<td class="p-4">Billing Success: FitCenter monthly renewal</td>
+<td class="p-4">
+<span class="inline-flex items-center px-2 py-1 rounded-full bg-emerald-100 text-emerald-800 font-label-sm text-[10px] uppercase">Success</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="p-4 text-on-surface-variant">Yesterday</td>
+<td class="p-4 font-medium flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-tertiary">update</span>
+                                        Maintenance
+                                    </td>
+<td class="p-4">Global Template Update: v2.4 deployed</td>
+<td class="p-4">
+<span class="inline-flex items-center px-2 py-1 rounded-full bg-blue-100 text-blue-800 font-label-sm text-[10px] uppercase">Info</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>
