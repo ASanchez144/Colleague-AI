@@ -1,9 +1,9 @@
 # AI_HANDOFF_V2 — Continuidad del proyecto Sebas.ai / Colleague-AI
 
 > Documento maestro de continuidad para agentes IA (Sonnet u otros).
-> Última actualización: 2026-04-29 (Fase 2)
-> Autores: Opus (Fase 0 + Fase 1 + Fase 1.1) + Sonnet (Fase 1.2 + 1.3 + Fase 2)
-> Siguiente agente: Sonnet (Fase 3 en adelante)
+> Última actualización: 2026-04-29 (Fase 3)
+> Autores: Opus (Fase 0 + Fase 1 + Fase 1.1) + Sonnet (Fase 1.2 + 1.3 + Fase 2 + Fase 3)
+> Siguiente agente: Sonnet (Fase 4 en adelante)
 
 ---
 
@@ -196,6 +196,70 @@ La idea real del producto: un agente IA capaz de sustituir o asistir a una o var
 
 ---
 
+## 7b. Estado de Fase 3 (completada 2026-04-29)
+
+### Archivos creados
+| Archivo | Qué es |
+|---|---|
+| `src/types/organization.ts` | Tipo OrganizationWithMembership — par org + membership |
+| `src/contexts/OrganizationContext.tsx` | OrganizationProvider + useOrganization hook — multi-tenant base |
+| `src/components/OrganizationSwitcher.tsx` | Dropdown selector de org con rol badge |
+| `src/components/RequireOrganization.tsx` | Guard: loading/error/sin-org antes de renderizar children |
+| `src/pages/OrganizationDebug.tsx` | DEV ONLY — /org-debug — valida OrganizationContext |
+
+### Archivos modificados
+| Archivo | Cambio |
+|---|---|
+| `src/App.tsx` | +OrganizationProvider, +/org-debug route (ProtectedRoute guarded) |
+| `STATE.md` | Actualizado a Fase 3 |
+| `DECISIONS.md` | +D009, +D010, +D011 |
+| `CHANGELOG_AI.md` | +Fase 3 entry |
+| `docs/AI_HANDOFF_V2.md` | Este documento |
+
+### Rutas disponibles post-Fase 3
+| Ruta | Componente | Guard |
+|---|---|---|
+| `/` | Landing | ninguno |
+| `/login` | Login | ninguno |
+| `/register` | Register | ninguno |
+| `/org-debug` | OrganizationDebug | ProtectedRoute (DEV ONLY) |
+| `/dashboardroot` | Dashboard | Firebase email guard (legacy) |
+
+### OrganizationContext — API pública
+```typescript
+const {
+  organizations,            // OrganizationWithMembership[]
+  currentOrganization,      // Organization | null
+  currentMembership,        // OrganizationMember | null
+  currentRole,              // OrgRole | null ('owner'|'admin'|'member'|'viewer')
+  loading,                  // boolean
+  error,                    // string | null
+  setCurrentOrganizationId, // (id: string) => void
+  refreshOrganizations,     // () => Promise<void>
+  isOwner,                  // boolean
+  isAdmin,                  // boolean (true for owner + admin)
+  isMember,                 // boolean (true if any role)
+} = useOrganization();
+```
+
+### Provider tree (Fase 3)
+```
+AuthProvider
+  OrganizationProvider
+    LanguageProvider
+      BrowserRouter
+```
+
+### Notas importantes
+- OrganizationContext depende de `user` de AuthContext — re-fetches cuando cambia el usuario
+- Org activa persiste en `localStorage` key `sebas_current_org_id`
+- Auto-selecciona primera org si stored key no existe en membership list
+- OrganizationSwitcher y RequireOrganization creados pero NO colocados en dashboard todavía — Fase 4
+- /org-debug es temporal — eliminar o feature-flag antes de producción
+- Dashboard sigue en Firestore — no tocado
+
+---
+
 ## 7. Estado de verificación — Fase 1.2 (completada 2026-04-28)
 
 | Check | Resultado |
@@ -274,8 +338,8 @@ Limpiar en fase posterior. Vite build pasa — no bloquear Fase 3 por esto.
 | Fase | Nombre | Scope |
 |---|---|---|
 | **2** | Auth + Google OAuth ← **COMPLETADA** | Supabase Auth, AuthContext, Login, Register, ProtectedRoute |
-| 3 | Multi-tenant + roles | Organization selector post-login, role-based access, profile creation flow |
-| 4 | Dashboard conectado | /dashboardroot → ProtectedRoute + Supabase; Dashboard.tsx lee de Supabase |
+| **3** | Multi-tenant + roles ← **COMPLETADA** | OrganizationContext, OrganizationSwitcher, RequireOrganization, /org-debug |
+| 4 | Dashboard conectado | /dashboardroot → ProtectedRoute + RequireOrganization + Supabase; Dashboard.tsx usa currentOrganization |
 | 5 | Leads CRUD | Crear, editar, filtrar, scoring desde Supabase |
 | 6 | Conversations + Messages | Vista conversaciones, historial mensajes |
 | 7 | Appointments | Gestión de citas |
@@ -320,12 +384,16 @@ Ejecuta **solo** la fase indicada por el usuario.
 - Commit recomendado
 - Detente.
 
-**Si estás en Fase 3:**
+**Si estás en Fase 4:**
 - Rama base: `feature/v2-functional-dashboard`.
-- Implementa organization selector post-login + role-based access.
-- ProtectedRoute ya existe en `src/components/ProtectedRoute.tsx`.
-- AuthContext ya existe en `src/contexts/AuthContext.tsx`.
-- No toques /dashboardroot todavía — eso es Fase 4.
+- OrganizationContext ya existe en `src/contexts/OrganizationContext.tsx`.
+- useOrganization() expone currentOrganization — úsalo para filtrar datos por org_id.
+- RequireOrganization ya existe en `src/components/RequireOrganization.tsx` — úsalo para guardar rutas privadas.
+- OrganizationSwitcher ya existe en `src/components/OrganizationSwitcher.tsx` — integrarlo en nav del dashboard.
+- /org-debug es temporal — eliminarlo en Fase 4 o tras validación.
+- Migrar /dashboardroot: reemplazar Firebase guard por ProtectedRoute + RequireOrganization.
+- Dashboard.tsx debe leer datos de Supabase usando currentOrganization.id, no Firestore.
+- No borres Firebase hasta que Dashboard.tsx esté completamente migrado.
 
 **Stack:** Vite + React 19 + React Router 7 + Tailwind CSS 4 + TypeScript + Supabase Auth (Fase 2+) + Firebase (legacy, /dashboardroot solamente).
 

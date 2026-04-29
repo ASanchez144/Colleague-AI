@@ -1,5 +1,49 @@
 # Changelog — AI-assisted changes
 
+## [2026-04-29] Fase 3 — Multi-tenant + roles
+
+### Added
+- src/types/organization.ts — OrganizationWithMembership type (Organization + OrganizationMember pair)
+- src/contexts/OrganizationContext.tsx — OrganizationProvider + useOrganization hook. Queries Supabase organization_members JOIN organizations for current user. Exposes: organizations, currentOrganization, currentMembership, currentRole, loading, error, setCurrentOrganizationId, refreshOrganizations, isOwner, isAdmin, isMember. Persists active org in localStorage.
+- src/components/OrganizationSwitcher.tsx — Dropdown switcher. Lists user orgs with role badge. Marks active org with checkmark. Loading/error/empty states. No hardcoded data.
+- src/components/RequireOrganization.tsx — Guard component. Renders loading/error/no-org states before passing children through. Base for Fase 4 org-scoped routes.
+- src/pages/OrganizationDebug.tsx — DEV ONLY page at /org-debug. Shows current user, active org (name/slug/sector/role), all orgs list. Reload button. Remove before production.
+
+### Changed
+- src/App.tsx — Added OrganizationProvider (inside AuthProvider, wrapping rest), /org-debug route (guarded by ProtectedRoute), imports for new components
+- STATE.md — Updated to Fase 3
+- DECISIONS.md — +D009, +D010, +D011
+- CHANGELOG_AI.md — This entry
+
+### Not changed
+- src/firebase.ts — untouched
+- src/pages/Dashboard.tsx — untouched (still reads Firestore)
+- src/pages/Landing.tsx — untouched
+- supabase/*, server/*, pipeline/*, templates/*, infra/* — untouched
+- vite.config.ts — untouched
+- .claude/worktrees — untouched
+
+### Architecture: OrganizationProvider tree
+```
+AuthProvider
+  OrganizationProvider   ← Fase 3 addition
+    LanguageProvider
+      BrowserRouter
+        Routes
+```
+
+### Build status
+- `npm run build`: **FAIL — pre-existing**, not caused by Fase 3. Error: `[commonjs--resolver] Failed to resolve entry for package "react-router"`. Confirmed identical error on original HEAD App.tsx. Cause: react-router v7 + Vite CJS resolver incompatibility. Fix requires vite.config.ts change (out of scope for Fase 3).
+- `npm run lint` (`tsc --noEmit`): FAIL — all ~33 errors pre-existing. Zero errors in Fase 3 files.
+
+### Pending (Fase 4)
+- Dashboard.tsx connect to Supabase using currentOrganization
+- /dashboardroot → ProtectedRoute + RequireOrganization
+- OrganizationSwitcher placed in dashboard nav
+- Firebase guard removed from App.tsx
+
+---
+
 ## [2026-04-29] Fase 2 — Auth + Google OAuth
 
 ### Added

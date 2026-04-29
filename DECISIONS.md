@@ -39,3 +39,18 @@
 **Context:** Stitch registration shows email/password fields + Google button.
 **Decision:** Fase 2 implements Google OAuth only via Supabase. Email/password deferred to Fase 3.
 **Rationale:** OAuth is simpler, avoids email verification flow complexity. Core auth pattern established first.
+
+## D009 — OrganizationContext not coupled to WhatsApp (2026-04-29)
+**Context:** Product starts WhatsApp-first but architecture must support voice_call, email, web_chat, form, manual.
+**Decision:** OrganizationContext and all Fase 3 components have zero WhatsApp-specific logic.
+**Rationale:** Organization = tenant. Channels are separate concerns configured per org, not baked into org provider.
+
+## D010 — Current org persisted in localStorage (2026-04-29)
+**Context:** User may have multiple org memberships. Need to remember active org across page refreshes.
+**Decision:** Active org ID stored in localStorage under key `sebas_current_org_id`. Auto-selects first org if stored key not found in membership list.
+**Rationale:** Simple UX — user doesn't re-select org on every load. No server round-trip needed.
+
+## D011 — /org-debug is DEV ONLY (2026-04-29)
+**Context:** Need a way to validate OrganizationContext during development without touching Dashboard.
+**Decision:** Temporary /org-debug page added, guarded by ProtectedRoute. Must be removed or feature-flagged before production.
+**Rationale:** Isolates Fase 3 validation from Dashboard. No risk of leaking prod data if guarded by auth.
