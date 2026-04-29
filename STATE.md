@@ -35,8 +35,8 @@ Fase 3 — Multi-tenant + roles (completed)
 ## Known issues
 - Landing.tsx = 738-line monolith (refactor in future phase)
 - Dashboard hardcoded to single admin email via Firebase
-- **npm run build FAILS** — PRE-EXISTING, not caused by Fase 3. Error: `[commonjs--resolver] Failed to resolve entry for package "react-router"`. Confirmed identical error on original App.tsx before Fase 3. Cause: react-router v7 + Vite CJS resolver. Fix requires vite.config.ts change (deferred, needs approval).
-- tsc --noEmit fails with ~33 errors — all pre-existing (Landing.tsx, Dashboard.tsx, templates). Zero errors in Fase 3 files.
+- **npm run build PASSES** as of Fase 3.5. Root cause was corrupted node_modules (multiple .mjs files missing from react-router, framer-motion, motion-dom, @reduxjs/toolkit). Fixed with full clean reinstall. `react-router` added as explicit dep with exact version pin.
+- tsc --noEmit fails with ~25 errors — all pre-existing (Landing.tsx key props, templates/02-03). Zero errors in Fase 3 files. react-router-dom type errors gone after clean reinstall.
 - Bundle JS ~1.2 MB (optimize with code splitting in future)
 - 1 npm vuln moderate (node-domexception deprecated)
 - /org-debug is dev-only, must be removed or gated before production

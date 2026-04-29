@@ -1,5 +1,21 @@
 # Changelog — AI-assisted changes
 
+## [2026-04-29] Fase 3.5 — Build stabilization
+
+### Fixed
+- `npm run build` now PASSES (2800 modules, 14s, dist generated cleanly)
+- Root cause: corrupted node_modules from initial install — multiple packages (react-router, framer-motion, motion-dom, @reduxjs/toolkit) had `.mjs` files referenced in exports but missing from disk (`.mjs.map` source maps present, `.mjs` targets absent). Likely Windows Defender quarantine or partial npm extraction.
+- Fix: full `node_modules` delete + `npm install`. No vite.config.ts changes required.
+- `react-router` added as explicit direct dep `"7.14.1"` (exact pin) in package.json to prevent accidental version drift.
+- `tsc --noEmit` lint errors reduced from ~33 to ~25 — react-router-dom type errors resolved by clean install. Remaining errors all pre-existing in Landing.tsx + templates (out of scope).
+
+### Not changed
+- vite.config.ts — no modifications
+- src/* — no modifications
+- supabase/*, server/*, pipeline/*, templates/* — untouched
+
+---
+
 ## [2026-04-29] Fase 3 — Multi-tenant + roles
 
 ### Added
