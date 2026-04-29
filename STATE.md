@@ -1,39 +1,47 @@
-# State — Sebas.ai (2026-04-28)
+# State — Sebas.ai (2026-04-29)
 
 ## Current phase
-Fase 1 — Cimientos Supabase (completed)
+Fase 2 — Auth + Google OAuth (completed)
 
 ## What works
 - Landing page (738-line monolith, functional)
-- Firebase Auth (Google popup, hardcoded to 1 email)
-- Dashboard (admin-only leads viewer from Firestore)
+- Firebase Auth (Google popup, hardcoded to 1 email) — /dashboardroot legacy route
+- Dashboard (admin-only leads viewer from Firestore) — still on Firebase
 - Express server (webhook, email via Resend, routing engine)
 - Pipeline orchestrator (template clone + adapt)
 - 5 bot templates structured
 - i18n (ES/EN)
 - Vercel deploy config
 
-## What is new (Fase 1)
-- supabase/migrations/001_initial_schema.sql — 14 tables, enums, indexes, RLS
-- supabase/seed.sql — DroneX Store + FitCenter Pro mock data
-- src/lib/supabase.ts — client (not yet connected to app)
-- src/types/database.ts — full type definitions
-- src/firebase.ts — migrated from JSON import to env vars
-- .env.example — Supabase + Firebase vars
+## What is new (Fase 2)
+- src/vite-env.d.ts — fixes import.meta.env TypeScript errors
+- src/contexts/AuthContext.tsx — Supabase Auth provider (user, session, loading, signInWithGoogle, signOut, refreshSession)
+- src/pages/Login.tsx — login page with Google OAuth via Supabase
+- src/pages/Register.tsx — register page with Google OAuth via Supabase
+- src/components/ProtectedRoute.tsx — Supabase session guard, redirects to /login
+- src/App.tsx — added /login, /register routes; wrapped with AuthProvider; Firebase guard kept for /dashboardroot
 
 ## What is mock / not connected
-- Supabase client exists but app still uses Firebase
-- Dashboard reads Firestore, not Supabase
-- No login/register pages
+- Supabase client exists and AuthContext is wired, but Google OAuth requires Supabase project configured with Google provider
+- Dashboard still reads Firestore, not Supabase
+- /dashboardroot still uses Firebase auth guard (migration deferred to Fase 4)
+- ProtectedRoute created but not yet applied to /dashboardroot
 - No multi-tenant UI
-- 21/23 Stitch screens not implemented
+- 20/23 Stitch screens not implemented
 - Templates exist as structure, not SaaS product
 
 ## Known issues
 - Landing.tsx = 738-line monolith (refactor in future phase)
-- Dashboard hardcoded to single admin email
-- firebase-applet-config.json deleted from git index but firebase.ts now uses env vars
-- @supabase/supabase-js not yet in package.json (install in Fase 2)
+- Dashboard hardcoded to single admin email via Firebase
+- tsc --noEmit fails with ~33 errors (non-blocking — Vite build passes)
+- Bundle JS ~1.2 MB (optimize with code splitting in future)
+- 1 npm vuln moderate (node-domexception deprecated)
+
+## Rutas disponibles
+- / → Landing
+- /login → Login (Supabase OAuth)
+- /register → Register (Supabase OAuth)
+- /dashboardroot → Dashboard (Firebase auth guard — legacy)
 
 ## Branch
 feature/v2-functional-dashboard

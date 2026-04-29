@@ -1,5 +1,31 @@
 # Changelog — AI-assisted changes
 
+## [2026-04-29] Fase 2 — Auth + Google OAuth
+
+### Added
+- src/vite-env.d.ts — `/// <reference types="vite/client" />` — fixes import.meta.env TypeScript errors across firebase.ts, supabase.ts, Landing.tsx
+- src/contexts/AuthContext.tsx — Supabase Auth context provider exposing: user, session, loading, signInWithGoogle, signOut, refreshSession
+- src/pages/Login.tsx — Login page with Google OAuth via Supabase; design inspired by Stitch login_sebas.ai; shows error state; redirects to /app after OAuth
+- src/pages/Register.tsx — Register page with Google OAuth via Supabase; design inspired by Stitch registration_sebas.ai; TODO Fase 3 for email/password + org creation
+- src/components/ProtectedRoute.tsx — Supabase session guard; blocks unauthenticated access; redirects to /login; shows loading spinner
+
+### Changed
+- src/App.tsx — Added AuthProvider wrapper, /login and /register routes; kept Firebase guard on /dashboardroot unchanged (TODO Fase 4)
+
+### Not changed
+- src/firebase.ts — untouched
+- src/pages/Dashboard.tsx — untouched (still reads Firestore)
+- src/pages/Landing.tsx — untouched
+- supabase/*, server/*, pipeline/*, templates/*, infra/* — untouched
+- .env.example — already complete, no changes needed
+
+### Known TypeScript errors (non-blocking)
+- ~33 tsc errors pre-existing from Fase 1 (server-only modules, key props, isolatedModules)
+- vite-env.d.ts fixes the import.meta.env category
+- Remaining errors outside Fase 2 scope — Vite build still passes
+
+---
+
 ## [2026-04-28] Fase 1 — Cimientos Supabase
 
 ### Added

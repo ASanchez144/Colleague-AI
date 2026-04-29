@@ -9,40 +9,53 @@ import { onAuthStateChanged, User } from 'firebase/auth';
 import { auth } from './firebase';
 import Landing from './pages/Landing';
 import Dashboard from './pages/Dashboard';
+import Login from './pages/Login';
+import Register from './pages/Register';
 import { LanguageProvider } from './i18n/LanguageContext';
+import { AuthProvider } from './contexts/AuthContext';
 
 export default function App() {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  // Firebase auth state — kept for /dashboardroot legacy route (Fase 4 will migrate to Supabase)
+  const [firebaseUser, setFirebaseUser] = useState<User | null>(null);
+  const [firebaseLoading, setFirebaseLoading] = useState(true);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-      setLoading(false);
+      setFirebaseUser(currentUser);
+      setFirebaseLoading(false);
     });
     return () => unsubscribe();
   }, []);
 
-  if (loading) {
-    return <div className="min-h-screen flex items-center justify-center bg-[#f8f6f2] text-[#0a0a0a]">Cargando...</div>;
+  if (firebaseLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 text-gray-500 text-sm">
+        Cargando...
+      </div>
+    );
   }
 
   return (
-    <LanguageProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route 
-            path="/dashboardroot" 
-            element={
-              user && user.email === 'arturoeldeteruel@gmail.com' 
-                ? <Dashboard user={user} /> 
-                : <Navigate to="/" />
-            } 
-          />
-          <Route path="*" element={<Navigate to="/" />} />
-        </Routes>
-      </BrowserRouter>
-    </LanguageProvider>
+    <AuthProvider>
+      <LanguageProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Landing />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            {/* TODO Fase 4: replace Firebase guard with ProtectedRoute + migrate Dashboard to Supabase */}
+            <Route
+              path="/dashboardroot"
+              element={
+                firebaseUser && firebaseUser.email === 'arturoeldeteruel@gmail.com'
+                  ? <Dashboard user={firebaseUser} />
+                  : <Navigate to="/" />
+              }
+            />
+            <Route path="*" element={<Navigate to="/" />} />
+          </Routes>
+        </BrowserRouter>
+      </LanguageProvider>
+    </AuthProvider>
   );
 }

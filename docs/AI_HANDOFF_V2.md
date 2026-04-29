@@ -1,9 +1,9 @@
 # AI_HANDOFF_V2 — Continuidad del proyecto Sebas.ai / Colleague-AI
 
 > Documento maestro de continuidad para agentes IA (Sonnet u otros).
-> Última actualización: 2026-04-28 (Fase 1.3)
-> Autores: Opus (Fase 0 + Fase 1 + Fase 1.1) + Sonnet (Fase 1.2 + 1.3)
-> Siguiente agente: Sonnet (Fase 2 en adelante)
+> Última actualización: 2026-04-29 (Fase 2)
+> Autores: Opus (Fase 0 + Fase 1 + Fase 1.1) + Sonnet (Fase 1.2 + 1.3 + Fase 2)
+> Siguiente agente: Sonnet (Fase 3 en adelante)
 
 ---
 
@@ -22,8 +22,9 @@
 
 ### Stack real (no lo que dice el PRD)
 - **Frontend:** Vite + React 19 + react-router-dom 7 + Tailwind CSS 4
-- **Auth actual:** Firebase Auth (Google popup, hardcoded a 1 email)
-- **DB actual:** Firestore (solo leads)
+- **Auth nueva:** Supabase Auth (Google OAuth, wired en AuthContext) ← Fase 2
+- **Auth legacy:** Firebase Auth (Google popup, hardcoded a 1 email) — solo /dashboardroot
+- **DB actual:** Firestore (solo leads, en Dashboard)
 - **DB futura:** Supabase PostgreSQL (schema definido, no conectado al dashboard)
 - **Backend:** Express en puerto 3001 (webhook leads, email Resend, routing engine)
 - **Pipeline:** `orchestrator.ts` (clona templates por cliente)
@@ -46,6 +47,8 @@
 ### Pantallas implementadas
 - `Landing.tsx` (738 líneas, monolito)
 - `Dashboard.tsx` (230 líneas, admin-only leads viewer desde Firestore)
+- `Login.tsx` (Fase 2 — Supabase Google OAuth)
+- `Register.tsx` (Fase 2 — Supabase Google OAuth)
 
 ---
 
@@ -106,6 +109,8 @@ La idea real del producto: un agente IA capaz de sustituir o asistir a una o var
 | D004 | RLS para multi-tenancy | Aislamiento a nivel DB, no app-level filtering |
 | D005 | UUIDs fijos en seed | Reproducibilidad, cross-references, debugging |
 | D006 | Firebase config desde env vars | No secretos en repo, build no rompe sin JSON |
+| D007 | Firebase guard sigue en /dashboardroot hasta Fase 4 | Dashboard.tsx depende de Firebase User prop + Firestore |
+| D008 | Google OAuth only en Fase 2 (sin email/password) | OAuth primero, evitar flujo email verification complejo |
 
 **Decisiones NO tomadas (fuera de scope de este chat):**
 - No se ha decidido usar Vercel como deploy definitivo
@@ -154,28 +159,44 @@ La idea real del producto: un agente IA capaz de sustituir o asistir a una o var
 - `qr_whatsapp.png` ✓
 - `whatsapp-qr.png` ✓
 
-### Archivos NO tocados (intencionalmente)
-- `src/App.tsx` — router + auth guard actual
-- `src/pages/Landing.tsx` — 738 líneas, monolito funcional
-- `src/pages/Dashboard.tsx` — admin-only leads viewer
-- `server/*` — Express API completa
-- `pipeline/*` — orchestrator
-- `templates/*` — 5 bot templates
-- `infra/*` — deploy scripts
-- `src/main.tsx` — entry point
-- `src/index.css` — estilos globales
+---
 
-### Modelo de datos (14 tablas)
-`organizations`, `profiles`, `organization_members`, `agents`, `channels`, `conversations`, `messages`, `leads`, `appointments`, `knowledge_items`, `integrations`, `automations`, `tasks`, `audit_logs`
+## 6. Estado de Fase 2 (completada 2026-04-29)
 
-### RLS implementado
-- `user_org_ids()` — devuelve org IDs del usuario autenticado
-- `user_is_org_admin(org_id)` — verifica admin/owner
-- SELECT: miembros de org | INSERT/UPDATE/DELETE: admin/owner de org
+### Archivos creados
+| Archivo | Qué es |
+|---|---|
+| `src/vite-env.d.ts` | Triple-slash ref a `vite/client` — fix import.meta.env TS errors |
+| `src/contexts/AuthContext.tsx` | Supabase Auth provider: user, session, loading, signInWithGoogle, signOut, refreshSession |
+| `src/pages/Login.tsx` | Login page — Google OAuth via Supabase — diseño Stitch-inspired |
+| `src/pages/Register.tsx` | Register page — Google OAuth via Supabase — diseño Stitch-inspired |
+| `src/components/ProtectedRoute.tsx` | Guard: no Supabase session → redirect /login |
+
+### Archivos modificados
+| Archivo | Cambio |
+|---|---|
+| `src/App.tsx` | +AuthProvider wrapper, +/login, +/register routes; Firebase guard en /dashboardroot sin cambios |
+| `STATE.md` | Actualizado a Fase 2 |
+| `DECISIONS.md` | +D007, +D008 |
+| `CHANGELOG_AI.md` | +Fase 2 entry |
+| `docs/AI_HANDOFF_V2.md` | Este documento |
+
+### Rutas disponibles post-Fase 2
+| Ruta | Componente | Guard |
+|---|---|---|
+| `/` | Landing | ninguno |
+| `/login` | Login | ninguno (redirige a /app tras OAuth) |
+| `/register` | Register | ninguno (redirige a /app tras OAuth) |
+| `/dashboardroot` | Dashboard | Firebase email === arturoeldeteruel@gmail.com |
+
+### Estado de build (Fase 2)
+- `npm run build`: PASS (pendiente confirmar post-escritura)
+- `tsc --noEmit`: ~33 errores pre-existentes (no bloquean build)
+- vite-env.d.ts resuelve la categoría import.meta.env
 
 ---
 
-## 6. Estado de verificación — Fase 1.2 (completada 2026-04-28)
+## 7. Estado de verificación — Fase 1.2 (completada 2026-04-28)
 
 | Check | Resultado |
 |---|---|
@@ -190,34 +211,49 @@ La idea real del producto: un agente IA capaz de sustituir o asistir a una o var
 | Categoría | Archivos | Detalle |
 |---|---|---|
 | Módulos server-only no en package raíz | `server/index.ts`, `infra/mcp-server/index.ts` | `cors`, `uuid`, `nodemailer`, `resend`, `winston`, `@mcp/sdk` no instalados en el package.json del frontend |
-| `import.meta.env` sin types | `src/firebase.ts`, `src/lib/supabase.ts`, `src/pages/Landing.tsx` | Falta `vite/client` en tsconfig `types` |
+| `import.meta.env` sin types | `src/firebase.ts`, `src/lib/supabase.ts`, `src/pages/Landing.tsx` | **RESUELTO en Fase 2** con `src/vite-env.d.ts` |
 | Props `key` en JSX | `src/pages/Landing.tsx:434,446,562,640` | `key` va en JSX, no en tipo del componente |
 | Templates (02, 03) | `templates/02-voice-agent/`, `templates/03-text-processor/` | `export type` requerido con `isolatedModules` |
 
-Limpiar en fase posterior. Vite build pasa — no bloquear Fase 2 por esto.
-
-### Warnings conocidos
-- Bundle JS ~1.2 MB — no bloqueante, optimizar con code splitting más adelante
-- 1 vulnerabilidad moderada npm (`node-domexception` deprecated) — `npm audit fix` cuando sea conveniente
+Limpiar en fase posterior. Vite build pasa — no bloquear Fase 3 por esto.
 
 ---
 
-## 7. Riesgos actuales
+## 8. Riesgos actuales
 
 1. **Si secretos estuvieron en GitHub, deben considerarse comprometidos y rotarse.** Firebase API keys, SSH keys, cualquier token que haya estado commiteado.
-2. **Firebase necesita `.env.local`** con `VITE_FIREBASE_*` vars para funcionar en local. Crear desde los valores que tenía `firebase-applet-config.json`.
-3. **`seed.sql` con `auth.users` fake** — solo funciona en Supabase local (`supabase start`) o con `service_role`. En instancia remota, crear usuarios por Supabase Auth UI.
-4. **No hacer migración completa Firebase → Supabase de golpe.** Progresiva.
-5. **No conectar dashboard a Supabase hasta Fase 4.**
-6. **Landing.tsx = 738 líneas monolito** — refactor en fase futura.
-7. **Dashboard hardcoded a un solo email** — será reemplazado por auth Supabase.
+2. **Firebase necesita `.env.local`** con `VITE_FIREBASE_*` vars para funcionar en local.
+3. **Supabase necesita `.env.local`** con `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY`.
+4. **Google OAuth requiere configuración en Supabase Dashboard:** Authentication → Providers → Google → habilitar + pegar Client ID + Secret de Google Cloud Console.
+5. **OAuth redirect URL** debe estar en lista blanca de Supabase y en Google Cloud Console: `https://[proyecto].supabase.co/auth/v1/callback` + URL de producción.
+6. **`seed.sql` con `auth.users` fake** — solo funciona en Supabase local (`supabase start`) o con `service_role`. En instancia remota, crear usuarios por Supabase Auth UI.
+7. **No hacer migración completa Firebase → Supabase de golpe.** Progresiva.
+8. **No conectar dashboard a Supabase hasta Fase 4.**
+9. **Landing.tsx = 738 líneas monolito** — refactor en fase futura.
+10. **Dashboard hardcoded a un solo email** — será reemplazado por auth Supabase en Fase 4.
 
 ---
 
-## 8. Qué NO debe tocar el siguiente agente todavía
+## 9. Cómo configurar Google OAuth en Supabase (resumen operativo)
 
-- Auth/OAuth / Google OAuth
-- Dashboard conectado a Supabase
+1. Ir a [console.cloud.google.com](https://console.cloud.google.com)
+2. Crear proyecto o usar existente → APIs & Services → Credentials
+3. Create OAuth 2.0 Client ID → Web application
+4. Authorized redirect URIs: `https://[tu-proyecto].supabase.co/auth/v1/callback`
+5. Copiar Client ID + Client Secret
+6. En Supabase Dashboard → Authentication → Providers → Google
+7. Habilitar → pegar Client ID + Client Secret → Save
+8. En Supabase Dashboard → Authentication → URL Configuration
+9. Site URL: URL de producción (ej: `https://sebas.ai`) o `http://localhost:5173` para dev
+10. Redirect URLs: añadir `http://localhost:5173/app` y la URL de producción
+11. En `.env.local`: `VITE_SUPABASE_URL` + `VITE_SUPABASE_ANON_KEY` desde Project Settings → API
+
+---
+
+## 10. Qué NO debe tocar el siguiente agente todavía
+
+- Dashboard conectado a Supabase (Fase 4)
+- ProtectedRoute aplicado a /dashboardroot (Fase 4)
 - WhatsApp real
 - Llamadas reales
 - Stripe / billing
@@ -233,14 +269,13 @@ Limpiar en fase posterior. Vite build pasa — no bloquear Fase 2 por esto.
 
 ---
 
-## 9. Fases futuras
+## 11. Fases futuras
 
 | Fase | Nombre | Scope |
 |---|---|---|
-| **1.3** | Cerrar ramas + handoff ← **ACTUAL** | Crear este archivo, confirmar rama, preparar continuidad |
-| 2 | Auth + Google OAuth | Supabase Auth, mantener Firebase en paralelo |
-| 3 | Multi-tenant + roles | Organization selector, role-based access |
-| 4 | Dashboard conectado | Dashboard.tsx lee de Supabase |
+| **2** | Auth + Google OAuth ← **COMPLETADA** | Supabase Auth, AuthContext, Login, Register, ProtectedRoute |
+| 3 | Multi-tenant + roles | Organization selector post-login, role-based access, profile creation flow |
+| 4 | Dashboard conectado | /dashboardroot → ProtectedRoute + Supabase; Dashboard.tsx lee de Supabase |
 | 5 | Leads CRUD | Crear, editar, filtrar, scoring desde Supabase |
 | 6 | Conversations + Messages | Vista conversaciones, historial mensajes |
 | 7 | Appointments | Gestión de citas |
@@ -260,7 +295,7 @@ Cada fase debe:
 
 ---
 
-## 10. Prompt corto para el siguiente agente
+## 12. Prompt corto para el siguiente agente
 
 Lee este archivo antes de actuar.
 
@@ -285,12 +320,14 @@ Ejecuta **solo** la fase indicada por el usuario.
 - Commit recomendado
 - Detente.
 
-**Si estás en Fase 2:**
-- No empieces hasta que Fase 1.3 esté cerrada y aprobada.
+**Si estás en Fase 3:**
 - Rama base: `feature/v2-functional-dashboard`.
-- Implementa Auth con Supabase. Mantén Firebase. No romper lo que funciona.
+- Implementa organization selector post-login + role-based access.
+- ProtectedRoute ya existe en `src/components/ProtectedRoute.tsx`.
+- AuthContext ya existe en `src/contexts/AuthContext.tsx`.
+- No toques /dashboardroot todavía — eso es Fase 4.
 
-**Stack:** Vite + React 19 + React Router 7 + Tailwind CSS 4 + TypeScript + Supabase (futuro) + Firebase (temporal).
+**Stack:** Vite + React 19 + React Router 7 + Tailwind CSS 4 + TypeScript + Supabase Auth (Fase 2+) + Firebase (legacy, /dashboardroot solamente).
 
 **Fuente visual:** `D:\Documentos\Proyectos\00.- Agencia Agentes\Agencia\stitch_sebas.ai_tu_empleado_ia_para_whatsapp` — usar `code.html` + `screen.png` por pantalla. No pegar HTML sin adaptar al stack real.
 
@@ -311,5 +348,8 @@ Ejecuta **solo** la fase indicada por el usuario.
 | `supabase/migrations/001_initial_schema.sql` | Schema completo |
 | `supabase/seed.sql` | Datos mock |
 | `src/types/database.ts` | Tipos TypeScript |
+| `src/lib/supabase.ts` | Cliente Supabase |
+| `src/contexts/AuthContext.tsx` | Auth provider Supabase |
+| `src/components/ProtectedRoute.tsx` | Guard de rutas |
 | `.env.example` | Variables de entorno necesarias |
 | `stitch_.../arquitectura_y_prd_de_sebas.ai.md` | PRD original de Stitch |

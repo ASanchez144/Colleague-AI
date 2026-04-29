@@ -29,3 +29,13 @@
 **Context:** firebase-applet-config.json contained secrets and was deleted from git index. src/firebase.ts imported it directly.
 **Decision:** Rewrite firebase.ts to read from VITE_FIREBASE_* env vars.
 **Rationale:** No secrets in repo, build doesn't break if JSON file absent, standard Vite env pattern.
+
+## D007 — Keep Firebase guard on /dashboardroot through Fase 3 (2026-04-29)
+**Context:** Dashboard.tsx expects Firebase `User` prop and reads Firestore. Supabase Auth (AuthContext) is now available.
+**Decision:** /dashboardroot keeps Firebase email guard. /login and /register use Supabase OAuth. ProtectedRoute exists but not yet applied to /dashboardroot.
+**Rationale:** Don't break admin access to existing dashboard. Fase 4 will migrate /dashboardroot to ProtectedRoute + Supabase session.
+
+## D008 — Google OAuth only for Fase 2 (no email/password) (2026-04-29)
+**Context:** Stitch registration shows email/password fields + Google button.
+**Decision:** Fase 2 implements Google OAuth only via Supabase. Email/password deferred to Fase 3.
+**Rationale:** OAuth is simpler, avoids email verification flow complexity. Core auth pattern established first.
