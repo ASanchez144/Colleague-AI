@@ -50,6 +50,16 @@
 **Decision:** Active org ID stored in localStorage under key `sebas_current_org_id`. Auto-selects first org if stored key not found in membership list.
 **Rationale:** Simple UX — user doesn't re-select org on every load. No server round-trip needed.
 
+## D012 — Dashboard reads Supabase only in Fase 4; no CRUD until Fase 5 (2026-04-29)
+**Context:** Dashboard.tsx was reading Firestore with Firebase auth guard. Fase 4 migrates it to Supabase.
+**Decision:** Dashboard reads Supabase via fetchDashboardData(currentOrganization.id). All writes (status changes, deletes) deferred to Fase 5.
+**Rationale:** Unblock multi-tenant dashboard without introducing partial CRUD that could corrupt seed data or leave UI inconsistencies.
+
+## D013 — Firebase auth removed from App.tsx routing in Fase 4 (2026-04-29)
+**Context:** App.tsx had onAuthStateChanged + firebaseLoading gate blocking entire app render for all users.
+**Decision:** Remove Firebase auth state from App.tsx. /dashboardroot now uses ProtectedRoute + RequireOrganization (Supabase-based).
+**Rationale:** Firebase loading gate was blocking Supabase users. src/firebase.ts kept for now but no longer drives routing.
+
 ## D011 — /org-debug is DEV ONLY (2026-04-29)
 **Context:** Need a way to validate OrganizationContext during development without touching Dashboard.
 **Decision:** Temporary /org-debug page added, guarded by ProtectedRoute. Must be removed or feature-flagged before production.

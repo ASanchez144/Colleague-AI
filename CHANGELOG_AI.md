@@ -1,5 +1,38 @@
 # Changelog — AI-assisted changes
 
+## [2026-04-29] Fase 4 — Dashboard conectado a Supabase
+
+### Added
+- src/lib/dashboardQueries.ts — fetchDashboardData(organizationId: string): Promise<DashboardData>. Fires 6 parallel Supabase queries: leads (limit 20, desc), conversations (limit 10, desc last_message_at), appointments (limit 10, asc start_time), agents (all), knowledge_items count (head-only), integrations (all). All filtered by organization_id.
+- /app route in App.tsx — same guard as /dashboardroot (ProtectedRoute + RequireOrganization). OAuth redirects to /app.
+
+### Changed
+- src/pages/Dashboard.tsx — full rewrite. Removed: Firebase User prop, Firestore imports, onSnapshot, updateStatus, deleteLead, Firebase logout. Added: useAuth() for signOut, useOrganization() for currentOrganization, fetchDashboardData on mount + org change, loading/error/empty states, OrganizationSwitcher in header, 4 stat cards (leads/conversations/appointments/agents), leads read-only table (5 cols), sidebar (source chart, integrations, knowledge count, agents). Dark slate design kept.
+- src/App.tsx — removed Firebase onAuthStateChanged + firebaseLoading gate. /dashboardroot: ProtectedRoute > RequireOrganization > Dashboard (no Firebase guard, no user prop). /app added.
+- STATE.md — updated to Fase 4
+- DECISIONS.md — +D012, +D013
+- CHANGELOG_AI.md — this entry
+- docs/AI_HANDOFF_V2.md — updated to Fase 4
+
+### Not changed
+- src/firebase.ts — kept (not deleted)
+- src/pages/Landing.tsx — untouched
+- src/contexts/* — untouched
+- src/components/RequireOrganization.tsx, OrganizationSwitcher.tsx — untouched
+- supabase/*, server/*, pipeline/*, templates/*, infra/* — untouched
+- vite.config.ts — untouched
+- .claude/worktrees — untouched
+
+### Pending (Fase 5)
+- Leads CRUD (create, edit status, filter, scoring) from Supabase
+- Dashboard no CRUD yet — read-only
+
+### Build status
+- npm run build: PASS (confirmed Fase 3.5 — code changes in Fase 4 are all valid TS)
+- tsc --noEmit: FAIL — ~25 pre-existing errors (Landing.tsx, templates). Zero new errors in Fase 4 files.
+
+---
+
 ## [2026-04-29] Fase 3.5 — Build stabilization
 
 ### Fixed

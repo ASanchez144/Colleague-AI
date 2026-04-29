@@ -1,9 +1,9 @@
 # AI_HANDOFF_V2 — Continuidad del proyecto Sebas.ai / Colleague-AI
 
 > Documento maestro de continuidad para agentes IA (Sonnet u otros).
-> Última actualización: 2026-04-29 (Fase 3)
-> Autores: Opus (Fase 0 + Fase 1 + Fase 1.1) + Sonnet (Fase 1.2 + 1.3 + Fase 2 + Fase 3)
-> Siguiente agente: Sonnet (Fase 4 en adelante)
+> Última actualización: 2026-04-29 (Fase 4)
+> Autores: Opus (Fase 0 + Fase 1 + Fase 1.1) + Sonnet (Fase 1.2 + 1.3 + Fase 2 + Fase 3 + Fase 4)
+> Siguiente agente: Sonnet (Fase 5 en adelante)
 
 ---
 
@@ -22,10 +22,10 @@
 
 ### Stack real (no lo que dice el PRD)
 - **Frontend:** Vite + React 19 + react-router-dom 7 + Tailwind CSS 4
-- **Auth nueva:** Supabase Auth (Google OAuth, wired en AuthContext) ← Fase 2
-- **Auth legacy:** Firebase Auth (Google popup, hardcoded a 1 email) — solo /dashboardroot
-- **DB actual:** Firestore (solo leads, en Dashboard)
-- **DB futura:** Supabase PostgreSQL (schema definido, no conectado al dashboard)
+- **Auth:** Supabase Auth (Google OAuth, wired en AuthContext) ← Fase 2
+- **Auth legacy:** Firebase (src/firebase.ts kept, no longer drives routing) ← removido de App.tsx en Fase 4
+- **DB dashboard:** Supabase PostgreSQL — leads, conversations, appointments, agents, knowledge_items, integrations ← Fase 4
+- **DB legacy:** Firestore (desconectado de Dashboard en Fase 4, src/firebase.ts kept)
 - **Backend:** Express en puerto 3001 (webhook leads, email Resend, routing engine)
 - **Pipeline:** `orchestrator.ts` (clona templates por cliente)
 - **Templates:** 5 bot templates en `/templates/01-05`
@@ -46,7 +46,7 @@
 
 ### Pantallas implementadas
 - `Landing.tsx` (738 líneas, monolito)
-- `Dashboard.tsx` (230 líneas, admin-only leads viewer desde Firestore)
+- `Dashboard.tsx` (reescrito Fase 4 — Supabase, multi-tenant, currentOrganization, read-only)
 - `Login.tsx` (Fase 2 — Supabase Google OAuth)
 - `Register.tsx` (Fase 2 — Supabase Google OAuth)
 
@@ -260,6 +260,49 @@ AuthProvider
 
 ---
 
+## 7c. Estado de Fase 4 (completada 2026-04-29)
+
+### Archivos creados
+| Archivo | Qué es |
+|---|---|
+| `src/lib/dashboardQueries.ts` | fetchDashboardData(organizationId) — 6 parallel Supabase queries, returns DashboardData |
+
+### Archivos modificados
+| Archivo | Cambio |
+|---|---|
+| `src/pages/Dashboard.tsx` | Reescrito: no Firebase, no User prop. Lee Supabase via currentOrganization. OrganizationSwitcher en header. Stats + leads table + sidebar (integrations/knowledge/agents). Loading/error/empty states. Read-only. |
+| `src/App.tsx` | Firebase onAuthStateChanged removed. /dashboardroot: ProtectedRoute > RequireOrganization > Dashboard. /app route added. |
+| `STATE.md` | Actualizado a Fase 4 |
+| `DECISIONS.md` | +D012, +D013 |
+| `CHANGELOG_AI.md` | +Fase 4 entry |
+| `docs/AI_HANDOFF_V2.md` | Este documento |
+
+### Rutas disponibles post-Fase 4
+| Ruta | Componente | Guard |
+|---|---|---|
+| `/` | Landing | ninguno |
+| `/login` | Login | ninguno |
+| `/register` | Register | ninguno |
+| `/app` | Dashboard | ProtectedRoute + RequireOrganization |
+| `/dashboardroot` | Dashboard | ProtectedRoute + RequireOrganization |
+| `/org-debug` | OrganizationDebug | ProtectedRoute (DEV ONLY) |
+
+### Dashboard — datos desde Supabase
+- `leads` — filtrado por organization_id, orden desc created_at, limit 20
+- `conversations` — filtrado por organization_id, orden desc last_message_at, limit 10
+- `appointments` — filtrado por organization_id, orden asc start_time, limit 10
+- `agents` — todos por organization_id
+- `knowledge_items` — count solo (head:true), filtrado por organization_id
+- `integrations` — todos por organization_id
+
+### Notas importantes
+- src/firebase.ts NO eliminado — kept per D002 (progresiva)
+- Firebase no importado en App.tsx ni Dashboard.tsx (Fase 4)
+- Dashboard es 100% read-only en Fase 4 — CRUD llega en Fase 5
+- /org-debug temporal — eliminar antes de producción
+
+---
+
 ## 7. Estado de verificación — Fase 1.2 (completada 2026-04-28)
 
 | Check | Resultado |
@@ -339,7 +382,7 @@ Limpiar en fase posterior. Vite build pasa — no bloquear Fase 3 por esto.
 |---|---|---|
 | **2** | Auth + Google OAuth ← **COMPLETADA** | Supabase Auth, AuthContext, Login, Register, ProtectedRoute |
 | **3** | Multi-tenant + roles ← **COMPLETADA** | OrganizationContext, OrganizationSwitcher, RequireOrganization, /org-debug |
-| 4 | Dashboard conectado | /dashboardroot → ProtectedRoute + RequireOrganization + Supabase; Dashboard.tsx usa currentOrganization |
+| **4** | Dashboard conectado ← **COMPLETADA** | /dashboardroot + /app → ProtectedRoute + RequireOrganization + Supabase; Dashboard reads currentOrganization |
 | 5 | Leads CRUD | Crear, editar, filtrar, scoring desde Supabase |
 | 6 | Conversations + Messages | Vista conversaciones, historial mensajes |
 | 7 | Appointments | Gestión de citas |
