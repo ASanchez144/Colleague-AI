@@ -4,3 +4,14 @@
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
 }
+
+@layer components {
+  .input-field {
+    @apply w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500/50 transition-colors;
+  }
+
+  select.input-field option {
+    background-color: #1e293b;
+    color: white;
+  }
+}

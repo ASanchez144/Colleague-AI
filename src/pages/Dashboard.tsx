@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import {
   PieChart, Pie, Cell, ResponsiveContainer, Tooltip,
 } from 'recharts';
@@ -209,7 +209,12 @@ export default function Dashboard() {
           <div className="lg:col-span-2 bg-white/5 rounded-2xl border border-white/10 overflow-hidden">
             <div className="p-5 border-b border-white/10 flex items-center justify-between">
               <h2 className="font-bold">Leads recientes</h2>
-              <span className="text-xs text-slate-400">{totalLeads} total · solo lectura</span>
+              <Link
+                to="/leads"
+                className="text-xs text-blue-400 hover:text-blue-300 transition-colors"
+              >
+                Ver todos →
+              </Link>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">

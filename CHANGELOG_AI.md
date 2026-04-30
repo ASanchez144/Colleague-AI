@@ -1,5 +1,42 @@
 # Changelog — AI-assisted changes
 
+## [2026-04-30] Fase 5 — Leads CRUD conectado a Supabase
+
+### Added
+- src/lib/leadsQueries.ts — fetchLeads(orgId, filters?), fetchLeadById(orgId, leadId), createLead(orgId, input), updateLead(orgId, leadId, input), updateLeadStatus(orgId, leadId, status). All queries include `.eq('organization_id', organizationId)`. Uses anon key only.
+- src/pages/Leads.tsx — Full CRUD page: status filter tabs (all + 6 statuses with counts), leads table with inline status dropdown, detail/edit side panel (all fields editable), create modal, loading/error/empty states. Protected by ProtectedRoute + RequireOrganization.
+- src/index.css — `.input-field` Tailwind component class for dark form inputs, used by Leads.tsx.
+
+### Changed
+- src/App.tsx — Added `import Leads` + `/leads` route (ProtectedRoute + RequireOrganization).
+- src/pages/Dashboard.tsx — "Ver todos →" link to /leads in leads table header. Added `Link` import from react-router-dom.
+- STATE.md — Updated to Fase 5
+- DECISIONS.md — +D014, +D015
+- CHANGELOG_AI.md — This entry
+- docs/AI_HANDOFF_V2.md — Updated to Fase 5
+
+### Not changed
+- src/firebase.ts — kept (not deleted)
+- src/pages/Landing.tsx — untouched
+- src/contexts/* — untouched
+- src/lib/supabase.ts — untouched
+- src/lib/dashboardQueries.ts — untouched
+- src/components/* — untouched
+- supabase/*, server/*, pipeline/*, templates/*, infra/* — untouched
+- vite.config.ts — untouched
+- package.json / package-lock.json — untouched (no new deps)
+- .claude/worktrees — untouched
+
+### Pending (Fase 6)
+- Conversations CRUD (list, detail, messages history)
+- Dashboard conversations section link
+
+### Build status
+- npm run build: PASS (confirmed Fase 5)
+- tsc --noEmit: FAIL — same ~25 pre-existing errors. Zero new errors in Fase 5 files.
+
+---
+
 ## [2026-04-29] Fase 4 — Dashboard conectado a Supabase
 
 ### Added

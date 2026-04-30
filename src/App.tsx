@@ -8,6 +8,7 @@ import Landing from './pages/Landing';
 import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import Leads from './pages/Leads';
 import OrganizationDebug from './pages/OrganizationDebug';
 import { LanguageProvider } from './i18n/LanguageContext';
 import { AuthProvider } from './contexts/AuthContext';
@@ -45,6 +46,18 @@ export default function App() {
                   <ProtectedRoute>
                     <RequireOrganization>
                       <Dashboard />
+                    </RequireOrganization>
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Fase 5: Leads CRUD */}
+              <Route
+                path="/leads"
+                element={
+                  <ProtectedRoute>
+                    <RequireOrganization>
+                      <Leads />
                     </RequireOrganization>
                   </ProtectedRoute>
                 }

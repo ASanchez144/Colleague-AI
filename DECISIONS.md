@@ -64,3 +64,13 @@
 **Context:** Need a way to validate OrganizationContext during development without touching Dashboard.
 **Decision:** Temporary /org-debug page added, guarded by ProtectedRoute. Must be removed or feature-flagged before production.
 **Rationale:** Isolates Fase 3 validation from Dashboard. No risk of leaking prod data if guarded by auth.
+
+## D014 — Leads CRUD: organization_id on all queries, no service_role in frontend (2026-04-30)
+**Context:** Fase 5 adds write operations (INSERT, UPDATE) to leads table from the frontend.
+**Decision:** Every fetchLeads/createLead/updateLead call includes `.eq('organization_id', organizationId)`. Anon key only — no service_role key in frontend.
+**Rationale:** Defense-in-depth for multi-tenancy. RLS enforces it at DB level; app-level filtering is an additional guard and documents intent clearly.
+
+## D015 — Leads CRUD uses optimistic-update-then-reload pattern (2026-04-30)
+**Context:** After updateLead, we could reload all leads or just patch the updated row locally.
+**Decision:** For updateLead, we locally patch the leads array with the returned row (optimistic). For createLead, we do a full reload to get the server-assigned id/timestamps.
+**Rationale:** Faster UX for edits (no full reload). Create gets a reload so all metadata (created_at, uuid) is fresh.

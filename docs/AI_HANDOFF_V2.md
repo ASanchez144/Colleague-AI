@@ -1,9 +1,9 @@
 # AI_HANDOFF_V2 — Continuidad del proyecto Sebas.ai / Colleague-AI
 
 > Documento maestro de continuidad para agentes IA (Sonnet u otros).
-> Última actualización: 2026-04-29 (Fase 4)
-> Autores: Opus (Fase 0 + Fase 1 + Fase 1.1) + Sonnet (Fase 1.2 + 1.3 + Fase 2 + Fase 3 + Fase 4)
-> Siguiente agente: Sonnet (Fase 5 en adelante)
+> Última actualización: 2026-04-30 (Fase 5)
+> Autores: Opus (Fase 0 + Fase 1 + Fase 1.1) + Sonnet (Fase 1.2 + 1.3 + Fase 2 + Fase 3 + Fase 4 + Fase 5)
+> Siguiente agente: Sonnet (Fase 6 en adelante)
 
 ---
 
@@ -46,7 +46,8 @@
 
 ### Pantallas implementadas
 - `Landing.tsx` (738 líneas, monolito)
-- `Dashboard.tsx` (reescrito Fase 4 — Supabase, multi-tenant, currentOrganization, read-only)
+- `Dashboard.tsx` (reescrito Fase 4 — Supabase, multi-tenant, currentOrganization, read-only + link to /leads)
+- `Leads.tsx` (Fase 5 — CRUD completo: list, create, edit, filter, status change, notes)
 - `Login.tsx` (Fase 2 — Supabase Google OAuth)
 - `Register.tsx` (Fase 2 — Supabase Google OAuth)
 
@@ -303,6 +304,58 @@ AuthProvider
 
 ---
 
+## 7d. Estado de Fase 5 (completada 2026-04-30)
+
+### Archivos creados
+| Archivo | Qué es |
+|---|---|
+| `src/lib/leadsQueries.ts` | fetchLeads, fetchLeadById, createLead, updateLead, updateLeadStatus — todas con organization_id filter |
+| `src/pages/Leads.tsx` | CRUD completo: lista con filtro por estado, modal crear lead, panel detalle/editar, quick status change |
+
+### Archivos modificados
+| Archivo | Cambio |
+|---|---|
+| `src/App.tsx` | +import Leads, +/leads route (ProtectedRoute + RequireOrganization) |
+| `src/pages/Dashboard.tsx` | +Link import, +"Ver todos →" enlace a /leads en header de tabla leads |
+| `src/index.css` | +.input-field utility class para inputs oscuros |
+| `STATE.md` | Actualizado a Fase 5 |
+| `DECISIONS.md` | +D014, +D015 |
+| `CHANGELOG_AI.md` | +Fase 5 entry |
+| `docs/AI_HANDOFF_V2.md` | Este documento |
+
+### Rutas disponibles post-Fase 5
+| Ruta | Componente | Guard |
+|---|---|---|
+| `/` | Landing | ninguno |
+| `/login` | Login | ninguno |
+| `/register` | Register | ninguno |
+| `/app` | Dashboard | ProtectedRoute + RequireOrganization |
+| `/dashboardroot` | Dashboard | ProtectedRoute + RequireOrganization |
+| `/leads` | Leads | ProtectedRoute + RequireOrganization ← Fase 5 |
+| `/org-debug` | OrganizationDebug | ProtectedRoute (DEV ONLY) |
+
+### Leads CRUD — funcionalidad implementada
+- **fetchLeads**: lista todos los leads de la org activa, orden desc created_at, filtro por status opcional
+- **createLead**: insert con organization_id, status default 'new', channel_type default 'manual'
+- **updateLead**: update con doble guard `.eq('id').eq('organization_id')`, retorna fila actualizada
+- **updateLeadStatus**: wrapper de updateLead para cambio rápido de estado
+- **UI**: filtro por estado (tabs con contadores), tabla con inline status dropdown, panel lateral detalle/edición completo, modal creación
+
+### Multi-tenancy garantizada
+- Todas las queries pasan `organizationId` leído de `useOrganization().currentOrganization.id`
+- createLead: `organization_id = currentOrganization.id` hardcoded en insert
+- updateLead/updateLeadStatus: `.eq('organization_id', organizationId)` en WHERE
+- Anon key solamente — sin service_role en frontend
+
+### Notas importantes
+- Dashboard.tsx tiene "Ver todos →" que navega a /leads
+- No hay delete de leads en Fase 5 (pospuesto por seguridad)
+- /leads usa `useOrganization()` + `RequireOrganization` — cambia automáticamente si el usuario cambia de org en el switcher
+- Conversations CRUD sigue pendiente (Fase 6)
+- Appointments CRUD pendiente (Fase 7)
+
+---
+
 ## 7. Estado de verificación — Fase 1.2 (completada 2026-04-28)
 
 | Check | Resultado |
@@ -383,7 +436,7 @@ Limpiar en fase posterior. Vite build pasa — no bloquear Fase 3 por esto.
 | **2** | Auth + Google OAuth ← **COMPLETADA** | Supabase Auth, AuthContext, Login, Register, ProtectedRoute |
 | **3** | Multi-tenant + roles ← **COMPLETADA** | OrganizationContext, OrganizationSwitcher, RequireOrganization, /org-debug |
 | **4** | Dashboard conectado ← **COMPLETADA** | /dashboardroot + /app → ProtectedRoute + RequireOrganization + Supabase; Dashboard reads currentOrganization |
-| 5 | Leads CRUD | Crear, editar, filtrar, scoring desde Supabase |
+| **5** | Leads CRUD ← **COMPLETADA** | /leads — listar, crear, editar, filtrar por estado, scoring, notas, multi-tenant |
 | 6 | Conversations + Messages | Vista conversaciones, historial mensajes |
 | 7 | Appointments | Gestión de citas |
 | 8 | Knowledge Base | Editor FAQ/productos por org |
