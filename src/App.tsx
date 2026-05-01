@@ -9,6 +9,7 @@ import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Leads from './pages/Leads';
+import Conversations from './pages/Conversations';
 import OrganizationDebug from './pages/OrganizationDebug';
 import { LanguageProvider } from './i18n/LanguageContext';
 import { AuthProvider } from './contexts/AuthContext';
@@ -58,6 +59,18 @@ export default function App() {
                   <ProtectedRoute>
                     <RequireOrganization>
                       <Leads />
+                    </RequireOrganization>
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Fase 6: Conversations + Messages */}
+              <Route
+                path="/conversations"
+                element={
+                  <ProtectedRoute>
+                    <RequireOrganization>
+                      <Conversations />
                     </RequireOrganization>
                   </ProtectedRoute>
                 }

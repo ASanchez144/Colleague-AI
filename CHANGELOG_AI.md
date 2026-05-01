@@ -1,5 +1,50 @@
 # Changelog — AI-assisted changes
 
+## [2026-04-30] Fase 6 — Conversations + Messages conectado a Supabase
+
+### Added
+- src/lib/conversationsQueries.ts — fetchConversations(orgId, filters?), fetchConversationById(orgId, convId), fetchMessages(orgId, convId), updateConversation(orgId, convId, input), updateConversationStatus(orgId, convId, status), createInternalMessage(orgId, convId, input). All queries include `.eq('organization_id', organizationId)`. Uses anon key only.
+- src/pages/Conversations.tsx — Master-detail page: status filter tabs (all + active/waiting/resolved/archived), channel filter dropdown, conversation list with contact info + status + channel + relative time + handoff indicator, detail panel with full message thread + status change selector + internal message form. Protected by ProtectedRoute + RequireOrganization.
+
+### Changed
+- src/App.tsx — Added `import Conversations` + `/conversations` route (ProtectedRoute + RequireOrganization).
+- src/pages/Dashboard.tsx — "Ver todas →" link to /conversations in conversations stat card header.
+- STATE.md — Updated to Fase 6
+- DECISIONS.md — +D016
+- CHANGELOG_AI.md — This entry
+- docs/AI_HANDOFF_V2.md — Updated to Fase 6
+
+### Not changed
+- src/firebase.ts — kept (not deleted)
+- src/pages/Landing.tsx — untouched
+- src/contexts/* — untouched
+- src/lib/supabase.ts — untouched
+- src/lib/dashboardQueries.ts — untouched
+- src/lib/leadsQueries.ts — untouched
+- src/components/* — untouched
+- src/types/database.ts — untouched (no new types needed)
+- supabase/*, server/*, pipeline/*, templates/*, infra/* — untouched
+- vite.config.ts — untouched
+- package.json / package-lock.json — untouched (no new deps)
+- .claude/worktrees — untouched
+
+### Schema values used
+- conversations.status: `active | waiting | resolved | archived`
+- conversations.channel_type: `whatsapp | voice_call | email | web_chat | form | manual`
+- messages.role: `user | assistant | system`
+- createInternalMessage uses role: `user`, channel_type: `manual` (schema-valid values)
+- "Handoff humano" = conversations with status `waiting` (no separate boolean in schema)
+
+### Pending (Fase 7)
+- Appointments CRUD (list, create, edit, status change)
+- Dashboard appointments section link
+
+### Build status
+- npm run build: PASS (confirmed Fase 6)
+- tsc --noEmit: FAIL — same ~25 pre-existing errors. Zero new errors in Fase 6 files.
+
+---
+
 ## [2026-04-30] Fase 5 — Leads CRUD conectado a Supabase
 
 ### Added

@@ -1,9 +1,9 @@
 # AI_HANDOFF_V2 — Continuidad del proyecto Sebas.ai / Colleague-AI
 
 > Documento maestro de continuidad para agentes IA (Sonnet u otros).
-> Última actualización: 2026-04-30 (Fase 5)
-> Autores: Opus (Fase 0 + Fase 1 + Fase 1.1) + Sonnet (Fase 1.2 + 1.3 + Fase 2 + Fase 3 + Fase 4 + Fase 5)
-> Siguiente agente: Sonnet (Fase 6 en adelante)
+> Última actualización: 2026-04-30 (Fase 6)
+> Autores: Opus (Fase 0 + Fase 1 + Fase 1.1) + Sonnet (Fase 1.2 + 1.3 + Fase 2 + Fase 3 + Fase 4 + Fase 5 + Fase 6)
+> Siguiente agente: Sonnet (Fase 7 en adelante)
 
 ---
 
@@ -48,6 +48,7 @@
 - `Landing.tsx` (738 líneas, monolito)
 - `Dashboard.tsx` (reescrito Fase 4 — Supabase, multi-tenant, currentOrganization, read-only + link to /leads)
 - `Leads.tsx` (Fase 5 — CRUD completo: list, create, edit, filter, status change, notes)
+- `Conversations.tsx` (Fase 6 — list + detail + messages thread + status change + internal message + status/channel filters)
 - `Login.tsx` (Fase 2 — Supabase Google OAuth)
 - `Register.tsx` (Fase 2 — Supabase Google OAuth)
 
@@ -356,6 +357,60 @@ AuthProvider
 
 ---
 
+## 7e. Estado de Fase 6 (completada 2026-04-30)
+
+### Archivos creados
+| Archivo | Qué es |
+|---|---|
+| `src/lib/conversationsQueries.ts` | fetchConversations, fetchConversationById, fetchMessages, updateConversation, updateConversationStatus, createInternalMessage — todas con organization_id filter |
+| `src/pages/Conversations.tsx` | Master-detail: lista con filtros de estado y canal, panel detalle con thread de mensajes, selector de estado, formulario de mensaje interno |
+
+### Archivos modificados
+| Archivo | Cambio |
+|---|---|
+| `src/App.tsx` | +import Conversations, +/conversations route (ProtectedRoute + RequireOrganization) |
+| `src/pages/Dashboard.tsx` | +"Ver todas →" link to /conversations en tarjeta de stat de conversaciones |
+| `STATE.md` | Actualizado a Fase 6 |
+| `DECISIONS.md` | +D016 |
+| `CHANGELOG_AI.md` | +Fase 6 entry |
+| `docs/AI_HANDOFF_V2.md` | Este documento |
+
+### Rutas disponibles post-Fase 6
+| Ruta | Componente | Guard |
+|---|---|---|
+| `/` | Landing | ninguno |
+| `/login` | Login | ninguno |
+| `/register` | Register | ninguno |
+| `/app` | Dashboard | ProtectedRoute + RequireOrganization |
+| `/dashboardroot` | Dashboard | ProtectedRoute + RequireOrganization |
+| `/leads` | Leads CRUD | ProtectedRoute + RequireOrganization |
+| `/conversations` | Conversations + Messages | ProtectedRoute + RequireOrganization ← Fase 6 |
+| `/org-debug` | OrganizationDebug | ProtectedRoute (DEV ONLY) |
+
+### Conversations — datos desde Supabase
+- `conversations` — filtrado por organization_id, orden desc last_message_at, filtros opcionales de status y channel_type
+- `messages` — filtrado por conversation_id + organization_id, orden asc created_at
+
+### Schema values usados
+- `conversations.status`: `active | waiting | resolved | archived`
+- `conversations.channel_type`: `whatsapp | voice_call | email | web_chat | form | manual`
+- `messages.role`: `user | assistant | system`
+- Handoff humano = `status === 'waiting'` (no hay columna explícita en schema)
+- Mensaje interno: `role: 'user'`, `channel_type: 'manual'`
+
+### Multi-tenancy garantizada
+- fetchConversations: `.eq('organization_id', organizationId)`
+- fetchMessages: `.eq('conversation_id').eq('organization_id')`
+- updateConversation: `.eq('id').eq('organization_id')`
+- createInternalMessage: `organization_id` en INSERT
+
+### Notas importantes
+- No hay delete de conversaciones ni mensajes en Fase 6
+- Conversations es master-detail; en móvil muestra la lista o el detalle, no ambos
+- /conversations usa `useOrganization()` + `RequireOrganization` — cambia si usuario cambia de org
+
+---
+
 ## 7. Estado de verificación — Fase 1.2 (completada 2026-04-28)
 
 | Check | Resultado |
@@ -437,7 +492,7 @@ Limpiar en fase posterior. Vite build pasa — no bloquear Fase 3 por esto.
 | **3** | Multi-tenant + roles ← **COMPLETADA** | OrganizationContext, OrganizationSwitcher, RequireOrganization, /org-debug |
 | **4** | Dashboard conectado ← **COMPLETADA** | /dashboardroot + /app → ProtectedRoute + RequireOrganization + Supabase; Dashboard reads currentOrganization |
 | **5** | Leads CRUD ← **COMPLETADA** | /leads — listar, crear, editar, filtrar por estado, scoring, notas, multi-tenant |
-| 6 | Conversations + Messages | Vista conversaciones, historial mensajes |
+| **6** | Conversations + Messages ← **COMPLETADA** | Vista conversaciones, historial mensajes, status change, mensaje interno |
 | 7 | Appointments | Gestión de citas |
 | 8 | Knowledge Base | Editor FAQ/productos por org |
 | 9 | Agent Config | Configuración IA por org (prompt, tono, modelo) |

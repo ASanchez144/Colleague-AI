@@ -175,9 +175,14 @@ export default function Dashboard() {
           </div>
 
           <div className="bg-white/5 p-5 rounded-xl border-l-4 border-emerald-500">
-            <div className="flex items-center gap-2 mb-2">
-              <MessageSquare size={14} className="text-emerald-400" />
-              <h3 className="text-slate-400 text-xs font-bold uppercase tracking-wider">Conversaciones</h3>
+            <div className="flex items-center justify-between gap-2 mb-2">
+              <div className="flex items-center gap-2">
+                <MessageSquare size={14} className="text-emerald-400" />
+                <h3 className="text-slate-400 text-xs font-bold uppercase tracking-wider">Conversaciones</h3>
+              </div>
+              <Link to="/conversations" className="text-xs text-emerald-400 hover:text-emerald-300 transition-colors">
+                Ver todas →
+              </Link>
             </div>
             <p className="text-3xl font-extrabold text-emerald-400">{activeConversations}</p>
             <p className="text-slate-400 text-xs mt-1">activas</p>
